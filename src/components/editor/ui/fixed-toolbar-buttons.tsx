@@ -55,29 +55,10 @@ export function FixedToolbarButtons() {
       {!readOnly && (
         <>
           <ToolbarGroup>
-            <UndoToolbarButton />
-            <RedoToolbarButton />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <AIToolbarButton tooltip="AI commands">
-              <WandSparklesIcon />
-            </AIToolbarButton>
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <ExportToolbarButton>
-              <ArrowUpToLineIcon />
-            </ExportToolbarButton>
-
-            <ImportToolbarButton />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
             <InsertToolbarButton />
-            <TurnIntoToolbarButton />
-            <FontSizeToolbarButton />
           </ToolbarGroup>
+
+          <div className="grow" />
 
           <ToolbarGroup>
             <MarkToolbarButton nodeType={KEYS.bold} tooltip="Bold (⌘+B)">
@@ -105,17 +86,6 @@ export function FixedToolbarButtons() {
             <MarkToolbarButton nodeType={KEYS.code} tooltip="Code (⌘+E)">
               <Code2Icon />
             </MarkToolbarButton>
-
-            <FontColorToolbarButton nodeType={KEYS.color} tooltip="Text color">
-              <BaselineIcon />
-            </FontColorToolbarButton>
-
-            <FontColorToolbarButton
-              nodeType={KEYS.backgroundColor}
-              tooltip="Background color"
-            >
-              <PaintBucketIcon />
-            </FontColorToolbarButton>
           </ToolbarGroup>
 
           <ToolbarGroup>
@@ -135,13 +105,10 @@ export function FixedToolbarButtons() {
 
           <ToolbarGroup>
             <MediaToolbarButton nodeType={KEYS.img} />
-            <MediaToolbarButton nodeType={KEYS.video} />
-            <MediaToolbarButton nodeType={KEYS.audio} />
             <MediaToolbarButton nodeType={KEYS.file} />
           </ToolbarGroup>
 
           <ToolbarGroup>
-            <LineHeightToolbarButton />
             <OutdentToolbarButton />
             <IndentToolbarButton />
           </ToolbarGroup>
@@ -155,14 +122,15 @@ export function FixedToolbarButtons() {
       <div className="grow" />
 
       <ToolbarGroup>
-        <MarkToolbarButton nodeType={KEYS.highlight} tooltip="Highlight">
-          <HighlighterIcon />
-        </MarkToolbarButton>
-        <CommentToolbarButton />
+        <UndoToolbarButton />
+        <RedoToolbarButton />
       </ToolbarGroup>
 
       <ToolbarGroup>
-        <ModeToolbarButton />
+        <ImportToolbarButton />
+        <ExportToolbarButton>
+          <ArrowUpToLineIcon />
+        </ExportToolbarButton>
       </ToolbarGroup>
     </div>
   );
