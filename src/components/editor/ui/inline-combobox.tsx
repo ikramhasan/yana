@@ -91,7 +91,7 @@ const InlineCombobox = ({
 
   // Check if current user is the creator of this element (for Yjs collaboration)
   const isCreator = React.useMemo(() => {
-    const elementUserId = (element as any).userId;
+    const elementUserId = element.userId;
     const currentUserId = editor.meta.userId;
 
     // If no userId (backwards compatibility or non-Yjs), allow
@@ -241,7 +241,7 @@ const InlineComboboxInput = ({
     <>
       {showTrigger && trigger}
 
-      <span className="relative min-h-[1lh]">
+      <span className="relative min-h-lh">
         <span
           className="invisible overflow-hidden text-nowrap"
           aria-hidden="true"
