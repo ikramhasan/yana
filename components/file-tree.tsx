@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import {
-  IconChevronRight,
   IconFile,
   IconFolder,
   IconFolderOpen,
@@ -25,7 +24,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
 } from "@/components/ui/sidebar"
 import {
   Collapsible,
@@ -105,7 +103,6 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
                 >
                     {isOpen ? <IconFolderOpen className="size-4" /> : <IconFolder className="size-4" />}
                     <span>{node.name}</span>
-                    <IconChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
               </SidebarMenuButton>
             </ContextMenuTrigger>
             <ContextMenuContent>
