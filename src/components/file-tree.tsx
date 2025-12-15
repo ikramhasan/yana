@@ -28,7 +28,7 @@ import {
 import {
   Collapsible,
   CollapsibleContent,
-} from "@/components/ui/collapsible"
+} from "@/components/editor/ui/collapsible"
 
 export type FileNode = {
   id: string
