@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import {
-  IconFile,
   IconFolder,
   IconFolderOpen,
   IconCopy,
@@ -11,6 +10,7 @@ import {
   IconPencil,
   IconTrash,
   IconFileText,
+  IconMarkdown,
 } from "@tabler/icons-react"
 import {
   ContextMenu,
@@ -148,7 +148,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
               className="rounded-none w-full justify-start"
               style={{ paddingLeft: `${paddingLeft}px` }}
             >
-              <IconFile className="size-4" />
+              <IconMarkdown className="size-4" />
               <span>{node.name}</span>
             </SidebarMenuButton>
           </ContextMenuTrigger>
