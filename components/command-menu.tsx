@@ -1,0 +1,86 @@
+"use client"
+
+import * as React from "react"
+import {
+  IconFilePlus,
+  IconFileText,
+  IconSun,
+  IconMoon,
+} from "@tabler/icons-react"
+import { useTheme } from "next-themes"
+
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  Command,
+} from "@/components/ui/command"
+
+export function CommandMenu() {
+  const [open, setOpen] = React.useState(false)
+  const { theme, setTheme } = useTheme()
+
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
+
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
+
+  const runCommand = React.useCallback((command: () => unknown) => {
+    setOpen(false)
+    command()
+  }, [])
+
+  return (
+    <CommandDialog open={open} onOpenChange={setOpen}>
+      <Command>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Suggestions">
+            <CommandItem
+              onSelect={() => {
+                runCommand(() => console.log("New Note"))
+              }}
+            >
+              <IconFileText className="mr-2 size-4" />
+              <span>New Note</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() => {
+                runCommand(() => console.log("New File"))
+              }}
+            >
+              <IconFilePlus className="mr-2 size-4" />
+              <span>New File</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Theme">
+            <CommandItem
+              onSelect={() =>
+                runCommand(() => setTheme(theme === "dark" ? "light" : "dark"))
+              }
+            >
+              <div className="flex items-center">
+                <IconSun className="mr-2 size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <IconMoon className="absolute mr-2 size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span>Switch Theme</span>
+              </div>
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    </CommandDialog>
+  )
+}
