@@ -28,10 +28,10 @@ export function VaultSwitcher({
     <SidebarMenu className="w-full">
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger className="w-full text-left">
+          <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground p-0"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-full text-left"
             >
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <IconFolder className="size-4" />
