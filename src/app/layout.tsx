@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { CommandMenu } from "@/components/command-menu";
 
@@ -23,12 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={jetbrainsMono.variable} suppressHydrationWarning>
-      <body
-        className={`${jetbrainsMono.variable} antialiased`}
-      >
+      <body className={`${jetbrainsMono.variable} antialiased`}>
         <Providers>
           <AppSidebar />
-          <SidebarTrigger />
           <CommandMenu />
           {children}
         </Providers>

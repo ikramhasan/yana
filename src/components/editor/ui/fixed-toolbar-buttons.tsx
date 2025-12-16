@@ -36,6 +36,7 @@ import { MoreToolbarButton } from "./more-toolbar-button";
 import { TableToolbarButton } from "./table-toolbar-button";
 import { ToggleToolbarButton } from "./toggle-toolbar-button";
 import { ToolbarGroup } from "./toolbar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
@@ -44,6 +45,7 @@ export function FixedToolbarButtons() {
     <div className="flex w-full">
       {!readOnly && (
         <>
+          <SidebarTrigger className="pt-1" />
           <ToolbarGroup>
             <InsertToolbarButton />
           </ToolbarGroup>

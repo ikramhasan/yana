@@ -6,7 +6,8 @@ import {
   IconFileText,
   IconSun,
   IconMoon,
-} from "@tabler/icons-react"
+  IconLayoutSidebar,
+} from "@tabler/icons-react";
 import { useTheme } from "next-themes"
 
 import {
@@ -19,27 +20,46 @@ import {
   CommandSeparator,
   Command,
 } from "@/components/ui/command"
+import {
+  registerKeyboardShortcuts,
+  type KeyboardShortcut,
+} from "@/lib/keyboard-shortcuts";
+import { useSidebar } from "./ui/sidebar";
 
 export function CommandMenu() {
-  const [open, setOpen] = React.useState(false)
-  const { theme, setTheme } = useTheme()
+  const [open, setOpen] = React.useState(false);
+  const { toggleSidebar } = useSidebar();
+  const { theme, setTheme } = useTheme();
 
   React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
-      }
-    }
+    const shortcuts: KeyboardShortcut[] = [
+      {
+        id: "toggle-command-menu",
+        key: "k",
+        metaOrCtrl: true,
+        description: "Toggle command menu",
+        action: () => {
+          setOpen((open) => !open);
+        },
+      },
+      {
+        id: "toogle-sidebar",
+        key: "s",
+        metaOrCtrl: true,
+        description: "Toggle sidebar",
+        action: () => {
+          toggleSidebar();
+        },
+      },
+    ];
 
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+    return registerKeyboardShortcuts(shortcuts);
+  }, [toggleSidebar]);
 
   const runCommand = React.useCallback((command: () => unknown) => {
-    setOpen(false)
-    command()
-  }, [])
+    setOpen(false);
+    command();
+  }, []);
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
@@ -50,7 +70,7 @@ export function CommandMenu() {
           <CommandGroup heading="Suggestions">
             <CommandItem
               onSelect={() => {
-                runCommand(() => console.log("New Note"))
+                runCommand(() => console.log("New Note"));
               }}
             >
               <IconFileText className="mr-2 size-4" />
@@ -58,7 +78,7 @@ export function CommandMenu() {
             </CommandItem>
             <CommandItem
               onSelect={() => {
-                runCommand(() => console.log("New File"))
+                runCommand(() => console.log("New File"));
               }}
             >
               <IconFilePlus className="mr-2 size-4" />
@@ -79,8 +99,17 @@ export function CommandMenu() {
               </div>
             </CommandItem>
           </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Others">
+            <CommandItem onSelect={() => runCommand(() => toggleSidebar())}>
+              <div className="flex items-center">
+                <IconLayoutSidebar className="mr-2 size-4" />
+                <span>Toggle Sidebar</span>
+              </div>
+            </CommandItem>
+          </CommandGroup>
         </CommandList>
       </Command>
     </CommandDialog>
-  )
+  );
 }
