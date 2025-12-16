@@ -3,7 +3,7 @@ import * as React from 'react';
 import type { TFileElement } from 'platejs';
 import type { SlateElementProps } from 'platejs/static';
 
-import { FileUp } from 'lucide-react';
+import { IconUpload } from '@tabler/icons-react';
 import { SlateElement } from 'platejs/static';
 
 export function FileElementStatic(props: SlateElementProps<TFileElement>) {
@@ -21,7 +21,7 @@ export function FileElementStatic(props: SlateElementProps<TFileElement>) {
         target="_blank"
       >
         <div className="flex items-center gap-1 p-1">
-          <FileUp className="size-5" />
+          <IconUpload className="size-5" />
           <div>{name}</div>
         </div>
       </a>

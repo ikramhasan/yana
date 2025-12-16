@@ -2,36 +2,32 @@
 
 import * as React from 'react';
 
-import type { PlateEditor, PlateElementProps } from 'platejs/react';
-
-import { AIChatPlugin } from '@platejs/ai/react';
+import type { PlateEditor, PlateElementProps } from "platejs/react";
 import {
-  CalendarIcon,
-  ChevronRightIcon,
-  Code2,
-  Columns3Icon,
-  Heading1Icon,
-  Heading2Icon,
-  Heading3Icon,
-  LightbulbIcon,
-  ListIcon,
-  ListOrdered,
-  PenToolIcon,
-  PilcrowIcon,
-  Quote,
-  RadicalIcon,
-  SparklesIcon,
-  Square,
-  Table,
-  TableOfContentsIcon,
-} from 'lucide-react';
-import { type TComboboxInputElement, KEYS } from 'platejs';
-import { PlateElement } from 'platejs/react';
+  IconCalendar,
+  IconChevronRight,
+  IconCode,
+  IconColumns3,
+  IconH1,
+  IconH2,
+  IconH3,
+  IconBulb,
+  IconList,
+  IconListNumbers,
+  IconPilcrow,
+  IconQuote,
+  IconMathFunction,
+  IconSquare,
+  IconTable,
+  IconListDetails,
+} from "@tabler/icons-react";
+import { type TComboboxInputElement, KEYS } from "platejs";
+import { PlateElement } from "platejs/react";
 
 import {
   insertBlock,
   insertInlineElement,
-} from '@/components/editor/transforms';
+} from "@/components/editor/transforms";
 
 import {
   InlineCombobox,
@@ -41,7 +37,7 @@ import {
   InlineComboboxGroupLabel,
   InlineComboboxInput,
   InlineComboboxItem,
-} from './inline-combobox';
+} from "./inline-combobox";
 
 type Group = {
   group: string;
@@ -58,91 +54,78 @@ type Group = {
 
 const groups: Group[] = [
   {
-    group: 'AI',
+    group: "Basic blocks",
     items: [
       {
-        focusEditor: false,
-        icon: <SparklesIcon />,
-        value: 'AI',
-        onSelect: (editor) => {
-          editor.getApi(AIChatPlugin).aiChat.show();
-        },
-      },
-    ],
-  },
-  {
-    group: 'Basic blocks',
-    items: [
-      {
-        icon: <PilcrowIcon />,
-        keywords: ['paragraph'],
-        label: 'Text',
+        icon: <IconPilcrow />,
+        keywords: ["paragraph"],
+        label: "Text",
         value: KEYS.p,
       },
       {
-        icon: <Heading1Icon />,
-        keywords: ['title', 'h1'],
-        label: 'Heading 1',
+        icon: <IconH1 />,
+        keywords: ["title", "h1"],
+        label: "Heading 1",
         value: KEYS.h1,
       },
       {
-        icon: <Heading2Icon />,
-        keywords: ['subtitle', 'h2'],
-        label: 'Heading 2',
+        icon: <IconH2 />,
+        keywords: ["subtitle", "h2"],
+        label: "Heading 2",
         value: KEYS.h2,
       },
       {
-        icon: <Heading3Icon />,
-        keywords: ['subtitle', 'h3'],
-        label: 'Heading 3',
+        icon: <IconH3 />,
+        keywords: ["subtitle", "h3"],
+        label: "Heading 3",
         value: KEYS.h3,
       },
       {
-        icon: <ListIcon />,
-        keywords: ['unordered', 'ul', '-'],
-        label: 'Bulleted list',
+        icon: <IconList />,
+        keywords: ["unordered", "ul", "-"],
+        label: "Bulleted list",
         value: KEYS.ul,
       },
       {
-        icon: <ListOrdered />,
-        keywords: ['ordered', 'ol', '1'],
-        label: 'Numbered list',
+        icon: <IconListNumbers />,
+        keywords: ["ordered", "ol", "1"],
+        label: "Numbered list",
         value: KEYS.ol,
       },
       {
-        icon: <Square />,
-        keywords: ['checklist', 'task', 'checkbox', '[]'],
-        label: 'To-do list',
+        icon: <IconSquare />,
+        keywords: ["checklist", "task", "checkbox", "[]"],
+        label: "To-do list",
         value: KEYS.listTodo,
       },
       {
-        icon: <ChevronRightIcon />,
-        keywords: ['collapsible', 'expandable'],
-        label: 'Toggle',
+        icon: <IconChevronRight />,
+        keywords: ["collapsible", "expandable"],
+        label: "Toggle",
         value: KEYS.toggle,
       },
       {
-        icon: <Code2 />,
-        keywords: ['```'],
-        label: 'Code Block',
+        icon: <IconCode />,
+        keywords: ["```"],
+        label: "Code Block",
         value: KEYS.codeBlock,
       },
       {
-        icon: <Table />,
-        label: 'Table',
+        icon: <IconTable />,
+        label: "Table",
         value: KEYS.table,
       },
       {
-        icon: <Quote />,
-        keywords: ['citation', 'blockquote', 'quote', '>'],
-        label: 'Blockquote',
+        icon: <IconQuote />,
+        keywords: ["citation", "blockquote", "quote", ">"],
+        label: "Blockquote",
         value: KEYS.blockquote,
       },
       {
-        description: 'Insert a highlighted block.',
-        icon: <LightbulbIcon />,
-        keywords: ['note'],
-        label: 'Callout',
+        description: "Insert a highlighted block.",
+        icon: <IconBulb />,
+        keywords: ["note"],
+        label: "Callout",
         value: KEYS.callout,
       },
     ].map((item) => ({
@@ -153,30 +136,24 @@ const groups: Group[] = [
     })),
   },
   {
-    group: 'Advanced blocks',
+    group: "Advanced blocks",
     items: [
       {
-        icon: <TableOfContentsIcon />,
-        keywords: ['toc'],
-        label: 'Table of contents',
+        icon: <IconListDetails />,
+        keywords: ["toc"],
+        label: "Table of contents",
         value: KEYS.toc,
       },
       {
-        icon: <Columns3Icon />,
-        label: '3 columns',
-        value: 'action_three_columns',
+        icon: <IconColumns3 />,
+        label: "3 columns",
+        value: "action_three_columns",
       },
       {
         focusEditor: false,
-        icon: <RadicalIcon />,
-        label: 'Equation',
+        icon: <IconMathFunction />,
+        label: "Equation",
         value: KEYS.equation,
-      },
-      {
-        icon: <PenToolIcon />,
-        keywords: ['excalidraw'],
-        label: 'Excalidraw',
-        value: KEYS.excalidraw,
       },
     ].map((item) => ({
       ...item,
@@ -186,19 +163,19 @@ const groups: Group[] = [
     })),
   },
   {
-    group: 'Inline',
+    group: "Inline",
     items: [
       {
         focusEditor: true,
-        icon: <CalendarIcon />,
-        keywords: ['time'],
-        label: 'Date',
+        icon: <IconCalendar />,
+        keywords: ["time"],
+        label: "Date",
         value: KEYS.date,
       },
       {
         focusEditor: false,
-        icon: <RadicalIcon />,
-        label: 'Inline Equation',
+        icon: <IconMathFunction />,
+        label: "Inline Equation",
         value: KEYS.inlineEquation,
       },
     ].map((item) => ({

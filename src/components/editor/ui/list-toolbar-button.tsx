@@ -7,7 +7,7 @@ import {
   useIndentTodoToolBarButton,
   useIndentTodoToolBarButtonState,
 } from '@platejs/list/react';
-import { List, ListOrdered, ListTodoIcon } from 'lucide-react';
+import { IconList, IconListNumbers, IconListCheck } from '@tabler/icons-react';
 import { useEditorRef, useEditorSelector } from 'platejs/react';
 
 import {
@@ -50,7 +50,7 @@ export function BulletedListToolbarButton() {
         }}
         data-state={pressed ? 'on' : 'off'}
       >
-        <List className="size-4" />
+        <IconList className="size-4" />
       </ToolbarSplitButtonPrimary>
 
       <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
@@ -130,7 +130,7 @@ export function NumberedListToolbarButton() {
         }
         data-state={pressed ? 'on' : 'off'}
       >
-        <ListOrdered className="size-4" />
+        <IconListNumbers className="size-4" />
       </ToolbarSplitButtonPrimary>
 
       <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
@@ -200,7 +200,7 @@ export function TodoListToolbarButton(
 
   return (
     <ToolbarButton {...props} {...buttonProps} tooltip="Todo">
-      <ListTodoIcon />
+      <IconListCheck />
     </ToolbarButton>
   );
 }

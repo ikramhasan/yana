@@ -7,121 +7,118 @@ import type { TElement } from 'platejs';
 
 import { DropdownMenuItemIndicator } from '@radix-ui/react-dropdown-menu';
 import {
-  CheckIcon,
-  ChevronRightIcon,
-  Columns3Icon,
-  FileCodeIcon,
-  Heading1Icon,
-  Heading2Icon,
-  Heading3Icon,
-  Heading4Icon,
-  Heading5Icon,
-  Heading6Icon,
-  ListIcon,
-  ListOrderedIcon,
-  PilcrowIcon,
-  QuoteIcon,
-  SquareIcon,
-} from 'lucide-react';
-import { KEYS } from 'platejs';
-import { useEditorRef, useSelectionFragmentProp } from 'platejs/react';
+  IconCheck,
+  IconChevronRight,
+  IconColumns3,
+  IconFileCode,
+  IconH1,
+  IconH2,
+  IconH3,
+  IconH4,
+  IconH5,
+  IconH6,
+  IconList,
+  IconListNumbers,
+  IconPilcrow,
+  IconQuote,
+  IconSquare,
+} from "@tabler/icons-react";
+import { KEYS } from "platejs";
+import { useEditorRef, useSelectionFragmentProp } from "platejs/react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  getBlockType,
-  setBlockType,
-} from '@/components/editor/transforms';
+} from "@/components/ui/dropdown-menu";
+import { getBlockType, setBlockType } from "@/components/editor/transforms";
 
-import { ToolbarButton, ToolbarMenuGroup } from './toolbar';
+import { ToolbarButton, ToolbarMenuGroup } from "./toolbar";
 
 export const turnIntoItems = [
   {
-    icon: <PilcrowIcon />,
-    keywords: ['paragraph'],
-    label: 'Text',
+    icon: <IconPilcrow />,
+    keywords: ["paragraph"],
+    label: "Text",
     value: KEYS.p,
   },
   {
-    icon: <Heading1Icon />,
-    keywords: ['title', 'h1'],
-    label: 'Heading 1',
-    value: 'h1',
+    icon: <IconH1 />,
+    keywords: ["title", "h1"],
+    label: "Heading 1",
+    value: "h1",
   },
   {
-    icon: <Heading2Icon />,
-    keywords: ['subtitle', 'h2'],
-    label: 'Heading 2',
-    value: 'h2',
+    icon: <IconH2 />,
+    keywords: ["subtitle", "h2"],
+    label: "Heading 2",
+    value: "h2",
   },
   {
-    icon: <Heading3Icon />,
-    keywords: ['subtitle', 'h3'],
-    label: 'Heading 3',
-    value: 'h3',
+    icon: <IconH3 />,
+    keywords: ["subtitle", "h3"],
+    label: "Heading 3",
+    value: "h3",
   },
   {
-    icon: <Heading4Icon />,
-    keywords: ['subtitle', 'h4'],
-    label: 'Heading 4',
-    value: 'h4',
+    icon: <IconH4 />,
+    keywords: ["subtitle", "h4"],
+    label: "Heading 4",
+    value: "h4",
   },
   {
-    icon: <Heading5Icon />,
-    keywords: ['subtitle', 'h5'],
-    label: 'Heading 5',
-    value: 'h5',
+    icon: <IconH5 />,
+    keywords: ["subtitle", "h5"],
+    label: "Heading 5",
+    value: "h5",
   },
   {
-    icon: <Heading6Icon />,
-    keywords: ['subtitle', 'h6'],
-    label: 'Heading 6',
-    value: 'h6',
+    icon: <IconH6 />,
+    keywords: ["subtitle", "h6"],
+    label: "Heading 6",
+    value: "h6",
   },
   {
-    icon: <ListIcon />,
-    keywords: ['unordered', 'ul', '-'],
-    label: 'Bulleted list',
+    icon: <IconList />,
+    keywords: ["unordered", "ul", "-"],
+    label: "Bulleted list",
     value: KEYS.ul,
   },
   {
-    icon: <ListOrderedIcon />,
-    keywords: ['ordered', 'ol', '1'],
-    label: 'Numbered list',
+    icon: <IconListNumbers />,
+    keywords: ["ordered", "ol", "1"],
+    label: "Numbered list",
     value: KEYS.ol,
   },
   {
-    icon: <SquareIcon />,
-    keywords: ['checklist', 'task', 'checkbox', '[]'],
-    label: 'To-do list',
+    icon: <IconSquare />,
+    keywords: ["checklist", "task", "checkbox", "[]"],
+    label: "To-do list",
     value: KEYS.listTodo,
   },
   {
-    icon: <ChevronRightIcon />,
-    keywords: ['collapsible', 'expandable'],
-    label: 'Toggle list',
+    icon: <IconChevronRight />,
+    keywords: ["collapsible", "expandable"],
+    label: "Toggle list",
     value: KEYS.toggle,
   },
   {
-    icon: <FileCodeIcon />,
-    keywords: ['```'],
-    label: 'Code',
+    icon: <IconFileCode />,
+    keywords: ["```"],
+    label: "Code",
     value: KEYS.codeBlock,
   },
   {
-    icon: <QuoteIcon />,
-    keywords: ['citation', 'blockquote', '>'],
-    label: 'Quote',
+    icon: <IconQuote />,
+    keywords: ["citation", "blockquote", ">"],
+    label: "Quote",
     value: KEYS.blockquote,
   },
   {
-    icon: <Columns3Icon />,
-    label: '3 columns',
-    value: 'action_three_columns',
+    icon: <IconColumns3 />,
+    label: "3 columns",
+    value: "action_three_columns",
   },
 ];
 
@@ -176,7 +173,7 @@ export function TurnIntoToolbarButton(props: DropdownMenuProps) {
             >
               <span className="pointer-events-none absolute right-2 flex size-3.5 items-center justify-center">
                 <DropdownMenuItemIndicator>
-                  <CheckIcon />
+                  <IconCheck />
                 </DropdownMenuItemIndicator>
               </span>
               {icon}

@@ -6,12 +6,12 @@ import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 
 import { PlaceholderPlugin } from '@platejs/media/react';
 import {
-  AudioLinesIcon,
-  FileUpIcon,
-  FilmIcon,
-  ImageIcon,
-  LinkIcon,
-} from 'lucide-react';
+  IconMusic,
+  IconUpload,
+  IconVideo,
+  IconPhoto,
+  IconLink,
+} from '@tabler/icons-react';
 import { isUrl, KEYS } from 'platejs';
 import { useEditorRef } from 'platejs/react';
 import { toast } from 'sonner';
@@ -53,25 +53,25 @@ const MEDIA_CONFIG: Record<
 > = {
   [KEYS.audio]: {
     accept: ['audio/*'],
-    icon: <AudioLinesIcon className="size-4" />,
+    icon: <IconMusic className="size-4" />,
     title: 'Insert Audio',
     tooltip: 'Audio',
   },
   [KEYS.file]: {
     accept: ['*'],
-    icon: <FileUpIcon className="size-4" />,
+    icon: <IconUpload className="size-4" />,
     title: 'Insert File',
     tooltip: 'File',
   },
   [KEYS.img]: {
     accept: ['image/*'],
-    icon: <ImageIcon className="size-4" />,
+    icon: <IconPhoto className="size-4" />,
     title: 'Insert Image',
     tooltip: 'Image',
   },
   [KEYS.video]: {
     accept: ['video/*'],
-    icon: <FilmIcon className="size-4" />,
+    icon: <IconVideo className="size-4" />,
     title: 'Insert Video',
     tooltip: 'Video',
   },
@@ -134,7 +134,7 @@ export function MediaToolbarButton({
                 Upload from computer
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setDialogOpen(true)}>
-                <LinkIcon />
+                <IconLink />
                 Insert via URL
               </DropdownMenuItem>
             </DropdownMenuGroup>

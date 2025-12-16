@@ -6,9 +6,9 @@ import {
   useToggleToolbarButton,
   useToggleToolbarButtonState,
 } from '@platejs/toggle/react';
-import { ListCollapseIcon } from 'lucide-react';
+import { IconListDetails } from "@tabler/icons-react";
 
-import { ToolbarButton } from './toolbar';
+import { ToolbarButton } from "./toolbar";
 
 export function ToggleToolbarButton(
   props: React.ComponentProps<typeof ToolbarButton>
@@ -18,7 +18,7 @@ export function ToggleToolbarButton(
 
   return (
     <ToolbarButton {...props} {...buttonProps} tooltip="Toggle">
-      <ListCollapseIcon />
+      <IconListDetails />
     </ToolbarButton>
   );
 }

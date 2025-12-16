@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import { formatCodeBlock, isLangSupported } from '@platejs/code-block';
-import { BracesIcon, Check, CheckIcon, CopyIcon } from 'lucide-react';
+import { IconBraces, IconCheck, IconCopy } from '@tabler/icons-react';
 import { type TCodeBlockElement, type TCodeSyntaxLeaf, NodeApi } from 'platejs';
 import {
   type PlateElementProps,
@@ -54,7 +54,7 @@ export function CodeBlockElement(props: PlateElementProps<TCodeBlockElement>) {
               onClick={() => formatCodeBlock(editor, { element })}
               title="Format code"
             >
-              <BracesIcon className="!size-3.5 text-muted-foreground" />
+              <IconBraces className="!size-3.5 text-muted-foreground" />
             </Button>
           )}
 
@@ -135,7 +135,7 @@ function CodeBlockCombobox() {
                     setOpen(false);
                   }}
                 >
-                  <Check
+                  <IconCheck
                     className={cn(
                       value === language.value ? 'opacity-100' : 'opacity-0'
                     )}
@@ -178,9 +178,9 @@ function CopyButton({
     >
       <span className="sr-only">Copy</span>
       {hasCopied ? (
-        <CheckIcon className="!size-3" />
+        <IconCheck className="!size-3" />
       ) : (
-        <CopyIcon className="!size-3" />
+        <IconCopy className="!size-3" />
       )}
     </Button>
   );

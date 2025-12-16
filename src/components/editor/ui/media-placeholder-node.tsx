@@ -10,7 +10,7 @@ import {
   PlaceholderProvider,
   updateUploadHistory,
 } from '@platejs/media/react';
-import { AudioLines, FileUp, Film, ImageIcon, Loader2Icon } from 'lucide-react';
+import { IconMusic, IconUpload, IconVideo, IconPhoto, IconLoader } from '@tabler/icons-react';
 import { KEYS } from 'platejs';
 import { PlateElement, useEditorPlugin, withHOC } from 'platejs/react';
 import { useFilePicker } from 'use-file-picker';
@@ -29,22 +29,22 @@ const CONTENT: Record<
   [KEYS.audio]: {
     accept: ['audio/*'],
     content: 'Add an audio file',
-    icon: <AudioLines />,
+    icon: <IconMusic />,
   },
   [KEYS.file]: {
     accept: ['*'],
     content: 'Add a file',
-    icon: <FileUp />,
+    icon: <IconUpload />,
   },
   [KEYS.img]: {
     accept: ['image/*'],
     content: 'Add an image',
-    icon: <ImageIcon />,
+    icon: <IconPhoto />,
   },
   [KEYS.video]: {
     accept: ['video/*'],
     content: 'Add a video',
-    icon: <Film />,
+    icon: <IconVideo />,
   },
 };
 
@@ -159,7 +159,7 @@ export const PlaceholderElement = withHOC(
                   <div>{formatBytes(uploadingFile?.size ?? 0)}</div>
                   <div>–</div>
                   <div className="flex items-center">
-                    <Loader2Icon className="mr-1 size-3.5 animate-spin text-muted-foreground" />
+                    <IconLoader className="mr-1 size-3.5 animate-spin text-muted-foreground" />
                     {progress ?? 0}%
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export function ImageProgress({
       />
       {progress < 100 && (
         <div className="absolute right-1 bottom-1 flex items-center space-x-2 rounded-full bg-black/50 px-1 py-0.5">
-          <Loader2Icon className="size-3.5 animate-spin text-muted-foreground" />
+          <IconLoader className="size-3.5 animate-spin text-muted-foreground" />
           <span className="font-medium text-white text-xs">
             {Math.round(progress)}%
           </span>

@@ -19,7 +19,7 @@ import {
   useFloatingLinkInsertState,
 } from '@platejs/link/react';
 import { cva } from 'class-variance-authority';
-import { ExternalLink, Link, Text, Unlink } from 'lucide-react';
+import { IconExternalLink, IconLink, IconTypography, IconUnlink } from '@tabler/icons-react';
 import { KEYS } from 'platejs';
 import {
   useEditorRef,
@@ -102,7 +102,7 @@ export function LinkFloatingToolbar({
     <div className="flex w-[330px] flex-col" {...inputProps}>
       <div className="flex items-center">
         <div className="flex items-center pr-1 pl-2 text-muted-foreground">
-          <Link className="size-4" />
+          <IconLink className="size-4" />
         </div>
 
         <FloatingLinkUrlInput
@@ -114,7 +114,7 @@ export function LinkFloatingToolbar({
       <Separator className="my-1" />
       <div className="flex items-center">
         <div className="flex items-center pr-1 pl-2 text-muted-foreground">
-          <Text className="size-4" />
+          <IconTypography className="size-4" />
         </div>
         <input
           className={inputVariants()}
@@ -152,7 +152,7 @@ export function LinkFloatingToolbar({
         type="button"
         {...unlinkButtonProps}
       >
-        <Unlink width={18} />
+        <IconUnlink width={18} />
       </button>
     </div>
   );
@@ -202,7 +202,7 @@ function LinkOpenButton() {
       aria-label="Open link in a new tab"
       target="_blank"
     >
-      <ExternalLink width={18} />
+      <IconExternalLink width={18} />
     </a>
   );
 }

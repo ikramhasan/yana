@@ -1,13 +1,14 @@
 'use client';
 
-import * as React from 'react';
 
-import { normalizeNodeId } from 'platejs';
-import { Plate, usePlateEditor } from 'platejs/react';
+import { normalizeNodeId } from "platejs";
+import { Plate, usePlateEditor } from "platejs/react";
 
-import { EditorKit } from '@/components/editor/editor-kit';
-import { SettingsDialog } from '@/components/editor/settings-dialog';
-import { Editor as PlateEditor, EditorContainer } from '@/components/editor/ui/editor';
+import { EditorKit } from "@/components/editor/editor-kit";
+import {
+  Editor as PlateEditor,
+  EditorContainer,
+} from "@/components/editor/ui/editor";
 
 export function Editor() {
   const editor = usePlateEditor({
@@ -20,8 +21,6 @@ export function Editor() {
       <EditorContainer>
         <PlateEditor variant="demo" />
       </EditorContainer>
-
-      <SettingsDialog />
     </Plate>
   );
 }

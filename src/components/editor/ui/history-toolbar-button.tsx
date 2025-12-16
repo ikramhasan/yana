@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Redo2Icon, Undo2Icon } from 'lucide-react';
+import { IconArrowForwardUp, IconArrowBackUp } from '@tabler/icons-react';
 import { useEditorRef, useEditorSelector } from 'platejs/react';
 
 import { ToolbarButton } from './toolbar';
@@ -24,7 +24,7 @@ export function RedoToolbarButton(
       onMouseDown={(e) => e.preventDefault()}
       tooltip="Redo"
     >
-      <Redo2Icon />
+      <IconArrowForwardUp />
     </ToolbarButton>
   );
 }
@@ -46,7 +46,7 @@ export function UndoToolbarButton(
       onMouseDown={(e) => e.preventDefault()}
       tooltip="Undo"
     >
-      <Undo2Icon />
+      <IconArrowBackUp />
     </ToolbarButton>
   );
 }

@@ -7,7 +7,7 @@ import {
   type DropdownMenuProps,
   DropdownMenuItemIndicator,
 } from '@radix-ui/react-dropdown-menu';
-import { CheckIcon, EyeIcon, PencilLineIcon, PenIcon } from 'lucide-react';
+import { IconCheck, IconEye, IconEdit, IconPencil } from '@tabler/icons-react';
 import { useEditorRef, usePlateState, usePluginOption } from 'platejs/react';
 
 import {
@@ -35,15 +35,15 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 
   const item: Record<string, { icon: React.ReactNode; label: string }> = {
     editing: {
-      icon: <PenIcon />,
+      icon: <IconPencil />,
       label: 'Editing',
     },
     suggestion: {
-      icon: <PencilLineIcon />,
+      icon: <IconEdit />,
       label: 'Suggestion',
     },
     viewing: {
-      icon: <EyeIcon />,
+      icon: <IconEye />,
       label: 'Viewing',
     },
   };
@@ -118,7 +118,7 @@ function Indicator() {
   return (
     <span className="pointer-events-none absolute right-2 flex size-3.5 items-center justify-center">
       <DropdownMenuItemIndicator>
-        <CheckIcon />
+        <IconCheck />
       </DropdownMenuItemIndicator>
     </span>
   );

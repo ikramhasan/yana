@@ -7,7 +7,7 @@ import {
   useScaleInput,
 } from '@platejs/media/react';
 import { cva } from 'class-variance-authority';
-import { ArrowLeft, ArrowRight, Download, Minus, Plus, X } from 'lucide-react';
+import { IconArrowLeft, IconArrowRight, IconDownload, IconMinus, IconPlus, IconX } from '@tabler/icons-react';
 import { useEditorRef } from 'platejs/react';
 
 import { cn } from '@/lib/utils';
@@ -78,7 +78,7 @@ export function MediaPreviewDialog() {
                 )}
                 type="button"
               >
-                <ArrowLeft />
+                <IconArrowLeft />
               </button>
               {(currentUrlIndex ?? 0) + 1}
               <button
@@ -90,7 +90,7 @@ export function MediaPreviewDialog() {
                 )}
                 type="button"
               >
-                <ArrowRight />
+                <IconArrowRight />
               </button>
             </div>
             <div className="flex">
@@ -103,7 +103,7 @@ export function MediaPreviewDialog() {
                 {...zommOutProps}
                 type="button"
               >
-                <Minus className="size-4" />
+                <IconMinus className="size-4" />
               </button>
               <div className="mx-px">
                 {isEditingScale ? (
@@ -124,19 +124,19 @@ export function MediaPreviewDialog() {
                 {...zoomInProps}
                 type="button"
               >
-                <Plus className="size-4" />
+                <IconPlus className="size-4" />
               </button>
             </div>
             {/* TODO: downLoad the image */}
             <button className={cn(buttonVariants())} type="button">
-              <Download className="size-4" />
+              <IconDownload className="size-4" />
             </button>
             <button
               {...closeProps}
               className={cn(buttonVariants())}
               type="button"
             >
-              <X className="size-4" />
+              <IconX className="size-4" />
             </button>
           </div>
         </div>

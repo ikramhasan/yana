@@ -5,7 +5,7 @@ import * as React from 'react';
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 
 import { MarkdownPlugin } from '@platejs/markdown';
-import { ArrowDownToLineIcon } from 'lucide-react';
+import { IconArrowDown } from '@tabler/icons-react';
 import { createSlateEditor } from 'platejs';
 import { useEditorRef } from 'platejs/react';
 import { serializeHtml } from 'platejs/static';
@@ -151,7 +151,7 @@ export function ExportToolbarButton(props: DropdownMenuProps) {
     <DropdownMenu open={open} onOpenChange={setOpen} modal={false} {...props}>
       <DropdownMenuTrigger asChild>
         <ToolbarButton pressed={open} tooltip="Export" isDropdown>
-          <ArrowDownToLineIcon className="size-4" />
+          <IconArrowDown className="size-4" />
         </ToolbarButton>
       </DropdownMenuTrigger>
 

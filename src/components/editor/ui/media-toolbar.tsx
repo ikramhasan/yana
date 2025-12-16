@@ -11,7 +11,7 @@ import {
   useImagePreviewValue,
 } from '@platejs/media/react';
 import { cva } from 'class-variance-authority';
-import { Link, Trash2Icon } from 'lucide-react';
+import { IconLink, IconTrash } from '@tabler/icons-react';
 import {
   useEditorRef,
   useEditorSelector,
@@ -82,7 +82,7 @@ export function MediaToolbar({
           <div className="flex w-[330px] flex-col">
             <div className="flex items-center">
               <div className="flex items-center pr-1 pl-2 text-muted-foreground">
-                <Link className="size-4" />
+                <IconLink className="size-4" />
               </div>
 
               <FloatingMediaPrimitive.UrlInput
@@ -107,7 +107,7 @@ export function MediaToolbar({
             <Separator orientation="vertical" className="mx-1 h-6" />
 
             <Button size="sm" variant="ghost" {...buttonProps}>
-              <Trash2Icon />
+              <IconTrash />
             </Button>
           </div>
         )}

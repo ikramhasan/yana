@@ -18,28 +18,28 @@ import {
 } from '@platejs/emoji/react';
 import * as Popover from '@radix-ui/react-popover';
 import {
-  AppleIcon,
-  ClockIcon,
-  CompassIcon,
-  FlagIcon,
-  LeafIcon,
-  LightbulbIcon,
-  MusicIcon,
-  SearchIcon,
-  SmileIcon,
-  StarIcon,
-  XIcon,
-} from 'lucide-react';
+  IconApple,
+  IconClock,
+  IconCompass,
+  IconFlag,
+  IconLeaf,
+  IconBulb,
+  IconMusic,
+  IconSearch,
+  IconMoodSmile,
+  IconStar,
+  IconX,
+} from "@tabler/icons-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
-import { ToolbarButton } from '@/components/editor/ui/toolbar';
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { ToolbarButton } from "@/components/editor/ui/toolbar";
 
 export function EmojiToolbarButton({
   options,
@@ -54,7 +54,7 @@ export function EmojiToolbarButton({
     <EmojiPopover
       control={
         <ToolbarButton pressed={isOpen} tooltip="Emoji" isDropdown {...props}>
-          <SmileIcon />
+          <IconMoodSmile />
         </ToolbarButton>
       }
       isOpen={isOpen}
@@ -113,14 +113,14 @@ export function EmojiPicker({
   handleCategoryClick,
   onMouseOver,
   onSelectEmoji,
-}: Omit<UseEmojiPickerType, 'icons'> & {
+}: Omit<UseEmojiPickerType, "icons"> & {
   icons?: EmojiIconList<React.ReactElement>;
 }) {
   return (
     <div
       className={cn(
-        'flex flex-col rounded-xl bg-popover text-popover-foreground',
-        'h-[23rem] w-80 border shadow-md'
+        "flex flex-col rounded-xl bg-popover text-popover-foreground",
+        "h-[23rem] w-80 border shadow-md"
       )}
     >
       <EmojiPickerNavigation
@@ -211,7 +211,7 @@ const RowOfButtons = React.memo(function RowOfButtons({
   row: GridRow;
 } & Pick<
   UseEmojiPickerType,
-  'emojiLibrary' | 'onMouseOver' | 'onSelectEmoji'
+  "emojiLibrary" | "onMouseOver" | "onSelectEmoji"
 >) {
   return (
     <div key={row.id} className="flex" data-index={row.id}>
@@ -240,15 +240,15 @@ function EmojiPickerContent({
   onSelectEmoji,
 }: Pick<
   UseEmojiPickerType,
-  | 'emojiLibrary'
-  | 'i18n'
-  | 'isSearching'
-  | 'onMouseOver'
-  | 'onSelectEmoji'
-  | 'refs'
-  | 'searchResult'
-  | 'settings'
-  | 'visibleCategories'
+  | "emojiLibrary"
+  | "i18n"
+  | "isSearching"
+  | "onMouseOver"
+  | "onSelectEmoji"
+  | "refs"
+  | "searchResult"
+  | "settings"
+  | "visibleCategories"
 >) {
   const getRowWidth = settings.perLine.value * settings.buttonSize.value;
 
@@ -343,11 +343,11 @@ function EmojiPickerContent({
     <div
       ref={refs.current.contentRoot}
       className={cn(
-        'h-full min-h-[50%] overflow-y-auto overflow-x-hidden px-2',
-        '[&::-webkit-scrollbar]:w-4',
-        '[&::-webkit-scrollbar-button]:hidden [&::-webkit-scrollbar-button]:size-0',
-        '[&::-webkit-scrollbar-thumb]:min-h-11 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/25',
-        '[&::-webkit-scrollbar-thumb]:border-4 [&::-webkit-scrollbar-thumb]:border-popover [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:bg-clip-padding'
+        "h-full min-h-[50%] overflow-y-auto overflow-x-hidden px-2",
+        "[&::-webkit-scrollbar]:w-4",
+        "[&::-webkit-scrollbar-button]:hidden [&::-webkit-scrollbar-button]:size-0",
+        "[&::-webkit-scrollbar-thumb]:min-h-11 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/25",
+        "[&::-webkit-scrollbar-thumb]:border-4 [&::-webkit-scrollbar-thumb]:border-popover [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:bg-clip-padding"
       )}
       data-id="scroll"
     >
@@ -365,7 +365,7 @@ function EmojiPickerSearchBar({
   setSearch,
 }: {
   children: React.ReactNode;
-} & Pick<UseEmojiPickerType, 'i18n' | 'searchValue' | 'setSearch'>) {
+} & Pick<UseEmojiPickerType, "i18n" | "searchValue" | "setSearch">) {
   return (
     <div className="flex items-center px-2">
       <div className="relative flex grow items-center">
@@ -389,12 +389,12 @@ function EmojiPickerSearchAndClear({
   clearSearch,
   i18n,
   searchValue,
-}: Pick<UseEmojiPickerType, 'clearSearch' | 'i18n' | 'searchValue'>) {
+}: Pick<UseEmojiPickerType, "clearSearch" | "i18n" | "searchValue">) {
   return (
     <div className="flex items-center text-foreground">
       <div
         className={cn(
-          '-translate-y-1/2 absolute top-1/2 left-2.5 z-10 flex size-5 items-center justify-center text-foreground'
+          "-translate-y-1/2 absolute top-1/2 left-2.5 z-10 flex size-5 items-center justify-center text-foreground"
         )}
       >
         {emojiSearchIcons.loupe}
@@ -404,7 +404,7 @@ function EmojiPickerSearchAndClear({
           size="icon"
           variant="ghost"
           className={cn(
-            '-translate-y-1/2 absolute top-1/2 right-0.5 flex size-8 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-popover-foreground hover:bg-transparent'
+            "-translate-y-1/2 absolute top-1/2 right-0.5 flex size-8 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-popover-foreground hover:bg-transparent"
           )}
           onClick={clearSearch}
           title={i18n.clear}
@@ -418,7 +418,7 @@ function EmojiPickerSearchAndClear({
   );
 }
 
-function EmojiPreview({ emoji }: Pick<UseEmojiPickerType, 'emoji'>) {
+function EmojiPreview({ emoji }: Pick<UseEmojiPickerType, "emoji">) {
   return (
     <div className="flex h-14 max-h-14 min-h-14 items-center border-muted border-t p-2">
       <div className="flex items-center justify-center text-2xl">
@@ -432,7 +432,7 @@ function EmojiPreview({ emoji }: Pick<UseEmojiPickerType, 'emoji'>) {
   );
 }
 
-function NoEmoji({ i18n }: Pick<UseEmojiPickerType, 'i18n'>) {
+function NoEmoji({ i18n }: Pick<UseEmojiPickerType, "i18n">) {
   return (
     <div className="flex h-14 max-h-14 min-h-14 items-center border-muted border-t p-2">
       <div className="flex items-center justify-center text-2xl">😢</div>
@@ -446,7 +446,7 @@ function NoEmoji({ i18n }: Pick<UseEmojiPickerType, 'i18n'>) {
   );
 }
 
-function PickAnEmoji({ i18n }: Pick<UseEmojiPickerType, 'i18n'>) {
+function PickAnEmoji({ i18n }: Pick<UseEmojiPickerType, "i18n">) {
   return (
     <div className="flex h-14 max-h-14 min-h-14 items-center border-muted border-t p-2">
       <div className="flex items-center justify-center text-2xl">☝️</div>
@@ -463,7 +463,7 @@ function EmojiPickerPreview({
   i18n,
   isSearching = false,
   ...props
-}: Pick<UseEmojiPickerType, 'emoji' | 'hasFound' | 'i18n' | 'isSearching'>) {
+}: Pick<UseEmojiPickerType, "emoji" | "hasFound" | "i18n" | "isSearching">) {
   const showPickEmoji = !emoji && (!isSearching || hasFound);
   const showNoEmoji = isSearching && !hasFound;
   const showPreview = emoji && !showNoEmoji && !showNoEmoji;
@@ -487,7 +487,7 @@ function EmojiPickerNavigation({
   onClick: (id: EmojiCategoryList) => void;
 } & Pick<
   UseEmojiPickerType,
-  'emojiLibrary' | 'focusedCategory' | 'i18n' | 'icons'
+  "emojiLibrary" | "focusedCategory" | "i18n" | "icons"
 >) {
   return (
     <TooltipProvider delayDuration={500}>
@@ -506,9 +506,9 @@ function EmojiPickerNavigation({
                     size="sm"
                     variant="ghost"
                     className={cn(
-                      'h-fit rounded-full fill-current p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground',
+                      "h-fit rounded-full fill-current p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground",
                       id === focusedCategory &&
-                        'pointer-events-none bg-accent fill-current text-accent-foreground'
+                        "pointer-events-none bg-accent fill-current text-accent-foreground"
                     )}
                     onClick={() => {
                       onClick(id);
@@ -577,52 +577,52 @@ const emojiCategoryIcons: Record<
   },
 
   custom: {
-    outline: <StarIcon className="size-full" />,
-    solid: <StarIcon className="size-full" />,
+    outline: <IconStar className="size-full" />,
+    solid: <IconStar className="size-full" />,
   },
 
   flags: {
-    outline: <FlagIcon className="size-full" />,
-    solid: <FlagIcon className="size-full" />,
+    outline: <IconFlag className="size-full" />,
+    solid: <IconFlag className="size-full" />,
   },
 
   foods: {
-    outline: <AppleIcon className="size-full" />,
-    solid: <AppleIcon className="size-full" />,
+    outline: <IconApple className="size-full" />,
+    solid: <IconApple className="size-full" />,
   },
 
   frequent: {
-    outline: <ClockIcon className="size-full" />,
-    solid: <ClockIcon className="size-full" />,
+    outline: <IconClock className="size-full" />,
+    solid: <IconClock className="size-full" />,
   },
 
   nature: {
-    outline: <LeafIcon className="size-full" />,
-    solid: <LeafIcon className="size-full" />,
+    outline: <IconLeaf className="size-full" />,
+    solid: <IconLeaf className="size-full" />,
   },
 
   objects: {
-    outline: <LightbulbIcon className="size-full" />,
-    solid: <LightbulbIcon className="size-full" />,
+    outline: <IconBulb className="size-full" />,
+    solid: <IconBulb className="size-full" />,
   },
 
   people: {
-    outline: <SmileIcon className="size-full" />,
-    solid: <SmileIcon className="size-full" />,
+    outline: <IconMoodSmile className="size-full" />,
+    solid: <IconMoodSmile className="size-full" />,
   },
 
   places: {
-    outline: <CompassIcon className="size-full" />,
-    solid: <CompassIcon className="size-full" />,
+    outline: <IconCompass className="size-full" />,
+    solid: <IconCompass className="size-full" />,
   },
 
   symbols: {
-    outline: <MusicIcon className="size-full" />,
-    solid: <MusicIcon className="size-full" />,
+    outline: <IconMusic className="size-full" />,
+    solid: <IconMusic className="size-full" />,
   },
 };
 
 const emojiSearchIcons = {
-  delete: <XIcon className="size-4 text-current" />,
-  loupe: <SearchIcon className="size-4 text-current" />,
+  delete: <IconX className="size-4 text-current" />,
+  loupe: <IconSearch className="size-4 text-current" />,
 };
