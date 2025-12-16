@@ -36,15 +36,11 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
   const item: Record<string, { icon: React.ReactNode; label: string }> = {
     editing: {
       icon: <IconPencil />,
-      label: 'Editing',
-    },
-    suggestion: {
-      icon: <IconEdit />,
-      label: 'Suggestion',
+      label: "Editing",
     },
     viewing: {
       icon: <IconEye />,
-      label: 'Viewing',
+      label: "Viewing",
     },
   };
 
@@ -61,21 +57,14 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
         <DropdownMenuRadioGroup
           value={value}
           onValueChange={(newValue) => {
-            if (newValue === 'viewing') {
+            if (newValue === "viewing") {
               setReadOnly(true);
 
               return;
             }
             setReadOnly(false);
 
-            if (newValue === 'suggestion') {
-              editor.setOption(SuggestionPlugin, 'isSuggesting', true);
-
-              return;
-            }
-            editor.setOption(SuggestionPlugin, 'isSuggesting', false);
-
-            if (newValue === 'editing') {
+            if (newValue === "editing") {
               editor.tf.focus();
 
               return;
@@ -98,15 +87,6 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
             <Indicator />
             {item.viewing.icon}
             {item.viewing.label}
-          </DropdownMenuRadioItem>
-
-          <DropdownMenuRadioItem
-            className="pl-2 *:first:[span]:hidden *:[svg]:text-muted-foreground"
-            value="suggestion"
-          >
-            <Indicator />
-            {item.suggestion.icon}
-            {item.suggestion.label}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
