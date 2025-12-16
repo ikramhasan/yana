@@ -8,7 +8,6 @@ import {
   IconItalic,
   IconStrikethrough,
   IconUnderline,
-  IconSparkles,
 } from "@tabler/icons-react";
 import { KEYS } from 'platejs';
 import { useEditorReadOnly } from 'platejs/react';
