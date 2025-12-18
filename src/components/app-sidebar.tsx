@@ -23,7 +23,7 @@ import {
     return (
       <Sidebar>
         <SidebarHeader>
-          <VaultSwitcher versions={["Notes", "Blogs"]} defaultVault="Notes" />
+          <VaultSwitcher />
           <SearchBar />
         </SidebarHeader>
         <SidebarContent>
@@ -46,7 +46,7 @@ import {
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenuItem>
-            <SettingsDialog versions={["Notes", "Blogs"]} defaultVault="Notes">
+            <SettingsDialog>
               <SidebarMenuButton>
                 Settings
                 <IconSettings className="ml-auto" />

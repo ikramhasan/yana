@@ -14,15 +14,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useVault } from "@/contexts/vault-context";
 
-export function VaultSwitcher({
-  versions,
-  defaultVault,
-}: {
-  versions: string[];
-  defaultVault: string;
-}) {
-  const [selectedVault, setSelectedVault] = React.useState(defaultVault);
+export function VaultSwitcher() {
+  const { vaults, currentVault, setDefaultVault } = useVault();
 
   return (
     <SidebarMenu className="w-full">
@@ -38,19 +33,21 @@ export function VaultSwitcher({
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="text-[10px] text-muted-foreground">Vault</span>
-                <span className="font-medium">{selectedVault}</span>
+                <span className="font-medium">
+                  {currentVault?.name ?? "No vault"}
+                </span>
               </div>
               <IconChevronsDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            {versions.map((version) => (
+            {vaults.map((vault) => (
               <DropdownMenuItem
-                key={version}
-                onSelect={() => setSelectedVault(version)}
+                key={vault.id}
+                onSelect={() => setDefaultVault(vault.id)}
               >
-                {version}
-                {version === selectedVault && <IconCheck className="ml-auto" />}
+                {vault.name}
+                {vault.isDefault && <IconCheck className="ml-auto" />}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

@@ -8,14 +8,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import {
   IconSun,
@@ -23,25 +18,26 @@ import {
   IconDeviceDesktop,
   IconPalette,
   IconFolder,
-  IconFolderOpen,
+  IconPlus,
+  IconCheck,
 } from "@tabler/icons-react";
 import { Separator } from "@/components/ui/separator";
+import { useVault } from "@/contexts/vault-context";
+import { Spinner } from "@/components/ui/spinner";
 
 export function SettingsDialog({
   children,
   open,
   onOpenChange,
-  versions = ["Notes", "Blogs"],
-  defaultVault = "Notes",
 }: {
   children: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  versions?: string[];
-  defaultVault?: string;
 }) {
   const { theme, setTheme } = useTheme();
-  const [selectedVault, setSelectedVault] = React.useState(defaultVault);
+  const { vaults, currentVault, isLoading, addVault, setDefaultVault } =
+    useVault();
+  const [isAddingVault, setIsAddingVault] = React.useState(false);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -119,41 +115,70 @@ export function SettingsDialog({
                 Manage your note vaults
               </p>
 
-              <Card className="rounded-none border shadow-none bg-transparent">
-                <CardContent className="flex items-center justify-between">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                      Current Vault
-                    </span>
-                    <span className="font-bold text-base">{selectedVault}</span>
-                    <span className="text-xs text-neutral-400">
-                      ~/Documents/yana/{selectedVault.toLowerCase()}
-                    </span>
-                  </div>
-                  <div className="size-2 rounded-full bg-green-500" />
-                </CardContent>
-              </Card>
-
-              <div>
-                <Select
-                  value={selectedVault}
-                  onValueChange={(val) => val && setSelectedVault(val)}
-                >
-                  <SelectTrigger className="w-full h-12 border-dashed border-2 hover:bg-neutral-50 hover:border-neutral-300 transition-colors [&>svg]:hidden justify-center text-neutral-500 font-medium uppercase tracking-wide text-xs">
-                    <div className="flex items-center gap-2">
-                      <IconFolderOpen className="size-4" />
-                      <span>Change Vault</span>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Spinner className="size-6" />
+                </div>
+              ) : (
+                <>
+                  {vaults.length > 0 && (
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                        All Vaults
+                      </span>
+                      <div className="space-y-2 pt-2">
+                        {vaults.map((vault) => (
+                          <Card
+                            key={vault.id}
+                            className="rounded-none border shadow-none bg-transparent"
+                          >
+                            <CardContent className="flex items-center justify-between">
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                  {vault.isDefault && (
+                                    <div className="size-2 rounded-full bg-green-500" />
+                                  )}
+                                  <span className="font-bold text-base text-foreground">
+                                    {vault.name}
+                                  </span>
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  {vault.path}
+                                </span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
                     </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {versions.map((v) => (
-                      <SelectItem key={v} value={v}>
-                        {v}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  )}
+
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 border-dashed border-2 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
+                    onClick={async () => {
+                      setIsAddingVault(true);
+                      try {
+                        await addVault();
+                      } finally {
+                        setIsAddingVault(false);
+                      }
+                    }}
+                    disabled={isAddingVault}
+                  >
+                    {isAddingVault ? (
+                      <Spinner className="size-4" />
+                    ) : (
+                      <>
+                        <IconPlus className="size-4 mr-2" />
+                        <span className="font-medium uppercase tracking-wide text-xs">
+                          Add another vault
+                        </span>
+                      </>
+                    )}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

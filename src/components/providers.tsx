@@ -2,6 +2,7 @@
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "./theme-provider";
+import { VaultProvider } from "@/contexts/vault-context";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <SidebarProvider>{children}</SidebarProvider>
+      <VaultProvider>
+        <SidebarProvider>{children}</SidebarProvider>
+      </VaultProvider>
     </ThemeProvider>
   );
 }
