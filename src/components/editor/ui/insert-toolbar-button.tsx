@@ -7,7 +7,6 @@ import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 import {
   IconCalendar,
   IconChevronRight,
-  IconFileCode,
   IconH1,
   IconH2,
   IconH3,
@@ -21,8 +20,8 @@ import {
   IconQuote,
   IconSquare,
   IconTable,
-  IconListDetails,
   IconCode,
+  IconCodeDots,
 } from "@tabler/icons-react";
 import { KEYS } from "platejs";
 import { type PlateEditor, useEditorRef } from "platejs/react";
@@ -83,7 +82,7 @@ const groups: Group[] = [
         value: KEYS.table,
       },
       {
-        icon: <IconFileCode />,
+        icon: <IconCode />,
         label: "Code",
         value: KEYS.codeBlock,
       },
@@ -180,7 +179,7 @@ const groups: Group[] = [
       },
       {
         focusEditor: true,
-        icon: <IconCode />,
+        icon: <IconCodeDots />,
         label: "Code",
         value: KEYS.code,
       }

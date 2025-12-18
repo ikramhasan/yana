@@ -17,7 +17,7 @@ import {
   IconQuote,
   IconSquare,
   IconTable,
-  IconListDetails,
+  IconCodeDots,
 } from "@tabler/icons-react";
 import { type TComboboxInputElement, KEYS } from "platejs";
 import { PlateElement } from "platejs/react";
@@ -161,7 +161,7 @@ const groups: Group[] = [
       },
       {
         focusEditor: true,
-        icon: <IconCode />,
+        icon: <IconCodeDots />,
         keywords: ["code"],
         label: "Inline code",
         value: KEYS.code,
