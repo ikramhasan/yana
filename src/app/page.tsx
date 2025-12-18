@@ -1,5 +1,5 @@
-import { Editor } from "@/components/editor/editor";
+import { MarkdownEditor } from "@/components/editor/markdown-editor";
 
 export default function Page() {
-    return <Editor />;
+    return <MarkdownEditor />;
 }

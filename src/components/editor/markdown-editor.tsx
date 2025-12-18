@@ -6,11 +6,11 @@ import { Plate, usePlateEditor } from "platejs/react";
 
 import { EditorKit } from "@/components/editor/editor-kit";
 import {
-  Editor as PlateEditor,
+  Editor ,
   EditorContainer,
 } from "@/components/editor/ui/editor";
 
-export function Editor() {
+export function MarkdownEditor() {
   const editor = usePlateEditor({
     plugins: EditorKit,
     value,
@@ -19,7 +19,7 @@ export function Editor() {
   return (
     <Plate editor={editor}>
       <EditorContainer>
-        <PlateEditor variant="demo" />
+        <Editor variant="demo" />
       </EditorContainer>
     </Plate>
   );
