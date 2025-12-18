@@ -29,31 +29,64 @@ import {
   Collapsible,
   CollapsibleContent,
 } from "@/components/editor/ui/collapsible"
+import { useFileTree } from "@/contexts/file-tree-context"
+import type { FileNode } from "@/types/file-tree"
 
-export type FileNode = {
-  id: string
-  name: string
-  type: "file" | "folder"
-  children?: FileNode[]
-}
+export function FileTree() {
+  const { nodes, selectedFile, isLoading, error, selectFile } = useFileTree()
 
-interface FileTreeProps {
-  data: FileNode[]
-}
+  // Show loading state
+  if (isLoading && nodes.length === 0) {
+    return (
+      <SidebarGroup className="p-0">
+        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+        <SidebarMenu className="gap-0">
+          <div className="px-4 py-2 text-sm text-muted-foreground">
+            Loading...
+          </div>
+        </SidebarMenu>
+      </SidebarGroup>
+    )
+  }
 
-export function FileTree({ data }: FileTreeProps) {
-  const [selectedId, setSelectedId] = React.useState<string | null>(null)
+  // Show error state
+  if (error) {
+    return (
+      <SidebarGroup className="p-0">
+        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+        <SidebarMenu className="gap-0">
+          <div className="px-4 py-2 text-sm text-destructive">
+            Error: {error.message}
+          </div>
+        </SidebarMenu>
+      </SidebarGroup>
+    )
+  }
+
+  // Show empty state
+  if (nodes.length === 0) {
+    return (
+      <SidebarGroup className="p-0">
+        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+        <SidebarMenu className="gap-0">
+          <div className="px-4 py-2 text-sm text-muted-foreground">
+            No files found
+          </div>
+        </SidebarMenu>
+      </SidebarGroup>
+    )
+  }
 
   return (
     <SidebarGroup className="p-0">
       <SidebarGroupLabel>Workspace</SidebarGroupLabel>
       <SidebarMenu className="gap-0">
-        {data.map((node) => (
+        {nodes.map((node) => (
           <FileTreeNode
             key={node.id}
             node={node}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
+            selectedId={selectedFile?.id ?? null}
+            onSelect={selectFile}
             depth={0}
           />
         ))}
@@ -65,7 +98,7 @@ export function FileTree({ data }: FileTreeProps) {
 interface FileTreeNodeProps {
   node: FileNode
   selectedId: string | null
-  onSelect: (id: string) => void
+  onSelect: (node: FileNode) => void
   depth?: number
 }
 
@@ -75,9 +108,11 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    onSelect(node.id)
     if (isFolder) {
       setIsOpen(!isOpen)
+    } else {
+      // Only call onSelect for files
+      onSelect(node)
     }
   }
   

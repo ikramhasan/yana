@@ -11,7 +11,7 @@ import {
   import { IconSettings, IconFilePlus, IconFolderPlus } from "@tabler/icons-react";
   
   import { SettingsDialog } from "./settings";
-  import { FileTree, type FileNode } from "./file-tree";
+  import { FileTree } from "./file-tree";
   import {
     ContextMenu,
     ContextMenuContent,
@@ -29,7 +29,7 @@ import {
         <SidebarContent>
           <ContextMenu>
             <ContextMenuTrigger className="flex min-h-full w-full flex-col">
-              <FileTree data={DUMMY_FILE_TREE} />
+              <FileTree />
               <div className="flex-1" />
             </ContextMenuTrigger>
             <ContextMenuContent>
@@ -57,35 +57,4 @@ import {
       </Sidebar>
     );
   }
-  
-  const DUMMY_FILE_TREE: FileNode[] = [
-    {
-      id: "1",
-      name: "Documents",
-      type: "folder",
-      children: [
-        {
-          id: "1-1",
-          name: "Work",
-          type: "folder",
-          children: [
-            { id: "1-1-1", name: "Report.md", type: "file" },
-            { id: "1-1-2", name: "Stats.csv", type: "file" },
-          ],
-        },
-        { id: "1-2", name: "Notes.txt", type: "file" },
-      ],
-    },
-    {
-      id: "2",
-      name: "Images",
-      type: "folder",
-      children: [
-        { id: "2-1", name: "Vacation.png", type: "file" },
-        { id: "2-2", name: "Profile.jpg", type: "file" },
-      ],
-    },
-    { id: "3", name: "Settings.json", type: "file" },
-    { id: "4", name: "README.md", type: "file" },
-  ];
   
