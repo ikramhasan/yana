@@ -7,6 +7,7 @@ import {
   IconSun,
   IconMoon,
   IconLayoutSidebar,
+  IconKeyboard,
 } from "@tabler/icons-react";
 import { useTheme } from "next-themes"
 
@@ -25,9 +26,11 @@ import {
   type KeyboardShortcut,
 } from "@/lib/keyboard-shortcuts";
 import { useSidebar } from "./ui/sidebar";
+import { KeyboardShortcutsDialog } from "./keyboard-shortcuts-dialog";
 
 export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = React.useState(false);
   const { toggleSidebar } = useSidebar();
   const { theme, setTheme } = useTheme();
 
@@ -62,6 +65,7 @@ export function CommandMenu() {
   }, []);
 
   return (
+    <>
     <CommandDialog open={open} onOpenChange={setOpen}>
       <Command>
         <CommandInput placeholder="Type a command or search..." />
@@ -107,9 +111,17 @@ export function CommandMenu() {
                 <span>Toggle Sidebar</span>
               </div>
             </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setShortcutsOpen(true))}>
+              <div className="flex items-center">
+                <IconKeyboard className="mr-2 size-4" />
+                <span>Keyboard Shortcuts</span>
+              </div>
+            </CommandItem>
           </CommandGroup>
         </CommandList>
       </Command>
     </CommandDialog>
+    <KeyboardShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
+    </>
   );
 }
