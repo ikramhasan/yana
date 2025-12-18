@@ -173,6 +173,29 @@ class VaultService {
 
     return updatedVaults;
   }
+
+  /**
+   * Update a vault's name.
+   * @param id - UUID of the vault to update
+   * @param newName - New name for the vault
+   * @param existingVaults - Current list of vaults
+   * @returns Promise resolving to the updated vaults array
+   */
+  async updateVaultName(id: string, newName: string, existingVaults: Vault[]): Promise<Vault[]> {
+    const vaultExists = existingVaults.some((v) => v.id === id);
+    if (!vaultExists) {
+      throw new Error(`Vault with id ${id} not found`);
+    }
+
+    const updatedVaults = existingVaults.map((vault) =>
+      vault.id === id ? { ...vault, name: newName.trim() } : vault
+    );
+
+    await this.saveVaults(updatedVaults);
+    await info(`Updated vault ${id} name to ${newName}`);
+
+    return updatedVaults;
+  }
 }
 
 export const vaultService = new VaultService();

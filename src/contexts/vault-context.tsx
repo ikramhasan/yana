@@ -103,6 +103,25 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     }
   }, [vaults]);
 
+  /**
+   * Update a vault's name.
+   */
+  const updateVaultName = useCallback(async (id: string, newName: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const updatedVaults = await vaultService.updateVaultName(id, newName, vaults);
+      setVaults(updatedVaults);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to update vault name');
+      setError(error);
+      console.error('Failed to update vault name:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [vaults]);
+
   const value: VaultContextValue = {
     vaults,
     currentVault,
@@ -111,6 +130,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     addVault,
     setDefaultVault,
     removeVault,
+    updateVaultName,
   };
 
   return <VaultContext.Provider value={value}>{children}</VaultContext.Provider>;

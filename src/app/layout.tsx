@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { AppSidebar } from "@/components/app-sidebar";
-import { CommandMenu } from "@/components/command-menu";
+import { AppLayout } from "@/components/app-layout";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -24,9 +23,7 @@ export default function RootLayout({
     <html lang="en" className={jetbrainsMono.variable} suppressHydrationWarning>
       <body className={`${jetbrainsMono.variable} antialiased`}>
         <Providers>
-          <AppSidebar />
-          <CommandMenu />
-          {children}
+          <AppLayout>{children}</AppLayout>
         </Providers>
       </body>
     </html>

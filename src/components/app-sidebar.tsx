@@ -10,7 +10,7 @@ import {
   import SearchBar from "./search-bar";
   import { IconSettings, IconFilePlus, IconFolderPlus } from "@tabler/icons-react";
   
-  import { SettingsDialog } from "./settings-dialog";
+  import { SettingsDialog } from "./settings";
   import { FileTree, type FileNode } from "./file-tree";
   import {
     ContextMenu,

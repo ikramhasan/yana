@@ -42,4 +42,6 @@ export interface VaultContextValue {
   setDefaultVault: (id: string) => Promise<void>;
   /** Remove a vault from the list */
   removeVault: (id: string) => Promise<void>;
+  /** Update a vault's name */
+  updateVaultName: (id: string, newName: string) => Promise<void>;
 }
