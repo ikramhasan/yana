@@ -1,14 +1,20 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import { useSettings } from "@/contexts/settings-context";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { IconSun, IconMoon, IconDeviceDesktop } from "@tabler/icons-react";
 
 export function GeneralTab() {
   const { theme, setTheme } = useTheme();
+  const { settings, updateSetting } = useSettings();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Theme Section */}
       <div className="space-y-3">
         <div className="space-y-1">
           <h3 className="text-sm font-medium">Theme</h3>
@@ -49,6 +55,33 @@ export function GeneralTab() {
             <span className="text-xs font-bold uppercase">System</span>
           </ToggleGroupItem>
         </ToggleGroup>
+      </div>
+
+      <Separator />
+
+      {/* Editor Section */}
+      <div className="space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-sm font-medium">Editor</h3>
+          <p className="text-xs text-muted-foreground">
+            Customize your editor experience
+          </p>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="hide-toolbar" className="text-sm font-normal">
+              Hide Editor Toolbar
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Hide the fixed toolbar at the top of the editor
+            </p>
+          </div>
+          <Switch
+            id="hide-toolbar"
+            checked={settings.hideEditorToolbar}
+            onCheckedChange={(checked) => updateSetting('hideEditorToolbar', checked)}
+          />
+        </div>
       </div>
     </div>
   );
