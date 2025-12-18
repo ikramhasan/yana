@@ -67,7 +67,9 @@ export const BlockDraggable: RenderNodeWrapper = (props) => {
 
   if (!enabled) return;
 
-  return (props) => <Draggable {...props} />;
+  return function DraggableWrapper(props: PlateElementProps) {
+    return <Draggable {...props} />;
+  };
 };
 
 function Draggable(props: PlateElementProps) {
@@ -149,7 +151,7 @@ function Draggable(props: PlateElementProps) {
               <Button
                 ref={handleRef}
                 variant="ghost"
-                className="-left-0 absolute h-6 w-full p-0"
+                className="left-0 absolute h-6 w-full p-0"
                 style={{ top: `${dragButtonTop + 3}px` }}
                 data-plate-prevent-deselect
               >
@@ -167,7 +169,7 @@ function Draggable(props: PlateElementProps) {
 
       <div
         ref={previewRef}
-        className={cn('-left-0 absolute hidden w-full')}
+        className={cn('left-0 absolute hidden w-full')}
         style={{ top: `${-previewTop}px` }}
         contentEditable={false}
       />
