@@ -22,6 +22,7 @@ import {
   IconSquare,
   IconTable,
   IconListDetails,
+  IconCode,
 } from "@tabler/icons-react";
 import { KEYS } from "platejs";
 import { type PlateEditor, useEditorRef } from "platejs/react";
@@ -148,21 +149,21 @@ const groups: Group[] = [
       },
     })),
   },
-  {
-    group: "Advanced blocks",
-    items: [
-      {
-        icon: <IconListDetails />,
-        label: "Table of contents",
-        value: KEYS.toc,
-      },
-    ].map((item) => ({
-      ...item,
-      onSelect: (editor, value) => {
-        insertBlock(editor, value);
-      },
-    })),
-  },
+  // {
+  //   group: "Advanced blocks",
+  //   items: [
+  //     {
+  //       icon: <IconListDetails />,
+  //       label: "Table of contents",
+  //       value: KEYS.toc,
+  //     },
+  //   ].map((item) => ({
+  //     ...item,
+  //     onSelect: (editor, value) => {
+  //       insertBlock(editor, value);
+  //     },
+  //   })),
+  // },
   {
     group: "Inline",
     items: [
@@ -177,6 +178,12 @@ const groups: Group[] = [
         label: "Date",
         value: KEYS.date,
       },
+      {
+        focusEditor: true,
+        icon: <IconCode />,
+        label: "Code",
+        value: KEYS.code,
+      }
     ].map((item) => ({
       ...item,
       onSelect: (editor, value) => {

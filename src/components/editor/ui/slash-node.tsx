@@ -7,7 +7,6 @@ import {
   IconCalendar,
   IconChevronRight,
   IconCode,
-  IconColumns3,
   IconH1,
   IconH2,
   IconH3,
@@ -16,7 +15,6 @@ import {
   IconListNumbers,
   IconPilcrow,
   IconQuote,
-  IconMathFunction,
   IconSquare,
   IconTable,
   IconListDetails,
@@ -135,33 +133,22 @@ const groups: Group[] = [
       },
     })),
   },
-  {
-    group: "Advanced blocks",
-    items: [
-      {
-        icon: <IconListDetails />,
-        keywords: ["toc"],
-        label: "Table of contents",
-        value: KEYS.toc,
-      },
-      {
-        icon: <IconColumns3 />,
-        label: "3 columns",
-        value: "action_three_columns",
-      },
-      {
-        focusEditor: false,
-        icon: <IconMathFunction />,
-        label: "Equation",
-        value: KEYS.equation,
-      },
-    ].map((item) => ({
-      ...item,
-      onSelect: (editor, value) => {
-        insertBlock(editor, value, { upsert: true });
-      },
-    })),
-  },
+  // {
+  //   group: "Advanced blocks",
+  //   items: [
+  //     {
+  //       icon: <IconListDetails />,
+  //       keywords: ["toc"],
+  //       label: "Table of contents",
+  //       value: KEYS.toc,
+  //     },
+  //   ].map((item) => ({
+  //     ...item,
+  //     onSelect: (editor, value) => {
+  //       insertBlock(editor, value, { upsert: true });
+  //     },
+  //   })),
+  // },
   {
     group: "Inline",
     items: [
@@ -173,11 +160,12 @@ const groups: Group[] = [
         value: KEYS.date,
       },
       {
-        focusEditor: false,
-        icon: <IconMathFunction />,
-        label: "Inline Equation",
-        value: KEYS.inlineEquation,
-      },
+        focusEditor: true,
+        icon: <IconCode />,
+        keywords: ["code"],
+        label: "Inline code",
+        value: KEYS.code,
+      }
     ].map((item) => ({
       ...item,
       onSelect: (editor, value) => {

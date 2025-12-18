@@ -14,7 +14,6 @@ import {
   insertMedia,
   insertVideoPlaceholder,
 } from '@platejs/media';
-import { SuggestionPlugin } from '@platejs/suggestion/react';
 import { TablePlugin } from '@platejs/table/react';
 import { insertToc } from '@platejs/toc';
 import {
@@ -71,6 +70,9 @@ const insertInlineMap: Record<
   string,
   (editor: PlateEditor, type: string) => void
 > = {
+  [KEYS.code]: (editor) => {
+    editor.tf.toggleMark(KEYS.code);
+  },
   [KEYS.date]: (editor) => insertDate(editor, { select: true }),
   [KEYS.inlineEquation]: (editor) =>
     insertInlineEquation(editor, '', { select: true }),
@@ -109,12 +111,6 @@ export const insertBlock = (
       editor.tf.insertNodes(editor.api.create.block({ type }), {
         at: PathApi.next(path),
         select: true,
-      });
-    }
-
-    if (!isSameBlockType) {
-      editor.getApi(SuggestionPlugin).suggestion.withoutSuggestions(() => {
-        editor.tf.removeNodes({ previousEmptyBlock: true });
       });
     }
   });
