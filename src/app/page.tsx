@@ -10,8 +10,7 @@ export default function Page() {
 
   console.log("Page rendered", index++);
 
-  // Use file content from context if available, otherwise show welcome message
   const markdown = fileContent ?? "# Welcome\n\nSelect a file from the sidebar to start editing.";
 
-  return <MarkdownEditor markdown={markdown} fileId={selectedFile?.id} />;
+  return <MarkdownEditor markdown={markdown} fileId={selectedFile?.id} filePath={selectedFile?.path} />;
 }

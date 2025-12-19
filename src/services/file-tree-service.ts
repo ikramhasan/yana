@@ -65,6 +65,31 @@ class FileTreeService {
   }
 
   /**
+   * Write content to a file.
+   * @param path - Absolute path to the file to write
+   * @param content - Content to write
+   * @throws Error if write fails
+   */
+  async saveFile(path: string, content: string): Promise<void> {
+    try {
+      await invoke('write_file', { path, content });
+      // We don't log success here to avoid spamming logs on every auto-save
+      // The backend logs success anyway
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      await logError(`Failed to save file ${path}: ${errorMessage}`);
+      
+      // Show user-facing error dialog
+      await message(`Failed to save file:\n\n${errorMessage}`, {
+        title: 'File Save Error',
+        kind: 'error',
+      });
+      
+      throw new Error(`Failed to save file: ${errorMessage}`);
+    }
+  }
+
+  /**
    * Start watching a directory for filesystem changes.
    * Emits events when files or folders are created, deleted, renamed, or modified.
    * Events are debounced to prevent excessive updates.

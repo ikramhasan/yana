@@ -1,19 +1,19 @@
-use notify::{RecommendedWatcher, RecursiveMode};
-use notify_debouncer_mini::{new_debouncer, DebouncedEventKind, Debouncer};
+use notify::{RecommendedWatcher, RecursiveMode, Watcher};
+// use notify_debouncer_mini::{new_debouncer, DebouncedEventKind, Debouncer}; // Removed
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::DefaultHasher;
 use std::fs;
 use std::hash::{Hash, Hasher};
 use std::path::Path;
 use std::sync::Mutex;
-use std::time::Duration;
+// use std::time::Duration; // Removed
 use tauri::{AppHandle, Emitter, Manager};
 
 /// Supported file extensions for the file tree
 const SUPPORTED_EXTENSIONS: &[&str] = &["md", "MD", "png", "jpg", "jpeg", "gif", "svg", "webp"];
 
-/// Debounce window in milliseconds for file watcher events
-const DEBOUNCE_MS: u64 = 500;
+/// Debounce window in milliseconds for file watcher events (Unused now)
+// const DEBOUNCE_MS: u64 = 500;
 
 /// Event name for file system changes emitted to frontend
 const FILE_EVENT_NAME: &str = "file-tree-change";
@@ -28,7 +28,7 @@ pub struct FileEvent {
 
 /// State to hold the file watcher
 pub struct WatcherState {
-    pub watcher: Option<Debouncer<RecommendedWatcher>>,
+    pub watcher: Option<RecommendedWatcher>,
     pub watching_path: Option<String>,
 }
 
@@ -200,6 +200,40 @@ pub async fn read_file(path: String) -> Result<String, String> {
     }
 }
 
+
+/// Write content to a file
+#[tauri::command]
+pub async fn write_file(path: String, content: String) -> Result<(), String> {
+    log::info!("Writing to file: {}", path);
+    
+    let file_path = Path::new(&path);
+
+    // Basic validation to ensure we're writing to a valid path structure
+    // We don't strictly check for file existence because we might want to create it,
+    // but for this specific use case (saving existing file), we could.
+    // However, standard save behavior usually allows creating/overwriting.
+    // Let's at least check parent directory exists to avoid random writes.
+    if let Some(parent) = file_path.parent() {
+        if !parent.exists() {
+             let error_msg = format!("Parent directory does not exist: {}", parent.display());
+             log::error!("{}", error_msg);
+             return Err(error_msg);
+        }
+    }
+
+    match fs::write(file_path, content) {
+        Ok(_) => {
+            log::info!("Successfully wrote to file '{}'", path);
+            Ok(())
+        }
+        Err(e) => {
+            let error_msg = format!("Failed to write file '{}': {}", path, e);
+            log::error!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
 /// Start watching a directory for changes
 #[tauri::command]
 pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> {
@@ -238,22 +272,22 @@ pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> 
     let app_handle = app.clone();
     let watched_path = path.clone();
 
-    // Create debounced watcher
-    let debouncer = new_debouncer(
-        Duration::from_millis(DEBOUNCE_MS),
-        move |result: Result<Vec<notify_debouncer_mini::DebouncedEvent>, notify::Error>| {
-            match result {
-                Ok(events) => {
-                    for event in events {
-                        let event_type = match event.kind {
-                            DebouncedEventKind::Any => "modify",
-                            DebouncedEventKind::AnyContinuous => "modify",
-                            _ => "modify", // Catch-all for any future event kinds
-                        };
+    // Create raw watcher
+    let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
+        match res {
+            Ok(event) => {
+                let event_type = match event.kind {
+                    notify::EventKind::Create(_) => Some("create"),
+                    notify::EventKind::Remove(_) => Some("delete"),
+                    notify::EventKind::Modify(notify::event::ModifyKind::Name(_)) => Some("rename"),
+                    _ => None,
+                };
 
+                if let Some(event_type_str) = event_type {
+                    for path in event.paths {
                         let file_event = FileEvent {
-                            event_type: event_type.to_string(),
-                            path: event.path.to_string_lossy().to_string(),
+                            event_type: event_type_str.to_string(),
+                            path: path.to_string_lossy().to_string(),
                         };
 
                         log::debug!(
@@ -263,18 +297,22 @@ pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> 
                         );
 
                         // Emit event to frontend
+                        // Since this is raw notify, events might burst. 
+                        // Frontend likely still has debounce (FileTreeService comments say "Events are debounced by the backend" but that was old code).
+                        // If frontend relies on debounce, we might spam it.
+                        // However, user specifically asked to use existing libraries and "subscribe to CreateKind...".
+                        // Basic file operations usually don't burst too much compared to Modify(Data).
                         if let Err(e) = app_handle.emit(FILE_EVENT_NAME, &file_event) {
                             log::error!("Failed to emit file event: {}", e);
                         }
                     }
                 }
-                Err(e) => {
-                    log::error!("File watcher error: {}. Attempting to continue watching.", e);
-                    // Don't stop the watcher - let it attempt to recover
-                }
             }
-        },
-    )
+            Err(e) => {
+                 log::error!("File watcher error: {:?}", e);
+            }
+        }
+    })
     .map_err(|e| {
         let error_msg = format!("Failed to create file watcher: {}", e);
         log::error!("{}", error_msg);
@@ -282,9 +320,7 @@ pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> 
     })?;
 
     // Start watching the directory
-    let mut debouncer = debouncer;
-    debouncer
-        .watcher()
+    watcher
         .watch(watch_path, RecursiveMode::Recursive)
         .map_err(|e| {
             let error_msg = format!("Failed to start watching '{}': {}", path, e);
@@ -295,7 +331,7 @@ pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> 
     log::info!("Successfully started watching directory: {}", path);
 
     // Store the watcher in state
-    watcher_state.watcher = Some(debouncer);
+    watcher_state.watcher = Some(watcher);
     watcher_state.watching_path = Some(watched_path);
 
     Ok(())

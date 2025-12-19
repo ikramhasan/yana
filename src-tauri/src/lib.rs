@@ -25,6 +25,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::scan_directory,
             commands::read_file,
+            commands::write_file,
             commands::start_watching,
             commands::stop_watching,
         ])
