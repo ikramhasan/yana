@@ -105,9 +105,12 @@ interface FileTreeNodeProps {
 }
 
 function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodeProps) {
-  const { createNewNote, deleteNode, duplicateFile } = useFileTree()
+  const { createNewNote, deleteNode, duplicateFile, renameNode } = useFileTree()
   const isFolder = node.type === "folder"
   const [isOpen, setIsOpen] = React.useState(false)
+  const [isRenaming, setIsRenaming] = React.useState(false)
+  const [newName, setNewName] = React.useState(node.name)
+  const inputRef = React.useRef<HTMLInputElement>(null)
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -131,6 +134,42 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
     e.stopPropagation()
     if (!isFolder) {
       await duplicateFile(node.path)
+    }
+  }
+
+  const handleRenameStart = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setIsRenaming(true)
+    setNewName(node.name)
+    // Focus after render
+    setTimeout(() => inputRef.current?.focus(), 0)
+  }
+
+  const handleRenameSubmit = async () => {
+    if (newName.trim() === "" || newName === node.name) {
+      setIsRenaming(false)
+      return
+    }
+
+    const parentPath = node.path.substring(0, node.path.lastIndexOf('/'))
+    const newPath = `${parentPath}/${newName}`
+
+    try {
+      await renameNode(node.path, newPath)
+    } catch (err) {
+      console.error("Rename failed", err)
+      setNewName(node.name)
+    } finally {
+      setIsRenaming(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleRenameSubmit()
+    } else if (e.key === "Escape") {
+      setIsRenaming(false)
+      setNewName(node.name)
     }
   }
 
@@ -170,7 +209,20 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
                   style={{ paddingLeft: `${paddingLeft}px` }}
                 >
                     {isOpen ? <IconFolderOpen className="size-4" /> : <IconFolder className="size-4" />}
-                    <span>{node.name}</span>
+                    {isRenaming ? (
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        onBlur={handleRenameSubmit}
+                        onKeyDown={handleKeyDown}
+                        className="bg-background border-none outline-none ring-1 ring-primary/50 rounded-sm px-1 w-full text-[13px] h-5 leading-none -ml-1"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <span>{node.name}</span>
+                    )}
               </SidebarMenuButton>
             </ContextMenuTrigger>
             <ContextMenuContent>
@@ -182,7 +234,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
                 <IconFolderPlus className="mr-2 size-4" />
                 New folder
               </ContextMenuItem>
-              <ContextMenuItem>
+              <ContextMenuItem onClick={handleRenameStart}>
                 <IconPencil className="mr-2 size-4" />
                 Rename
               </ContextMenuItem>
@@ -217,7 +269,20 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
               style={{ paddingLeft: `${paddingLeft}px` }}
             >
               <IconMarkdown className="size-4" />
-              <span>{node.name}</span>
+              {isRenaming ? (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  onBlur={handleRenameSubmit}
+                  onKeyDown={handleKeyDown}
+                  className="bg-background border-none outline-none ring-1 ring-primary/50 rounded-sm px-1 w-full text-[13px] h-5 leading-none -ml-1"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <span>{node.name}</span>
+              )}
             </SidebarMenuButton>
           </ContextMenuTrigger>
           <ContextMenuContent>
@@ -229,7 +294,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
               <IconCopy className="mr-2 size-4" />
               Duplicate
             </ContextMenuItem>
-            <ContextMenuItem>
+            <ContextMenuItem onClick={handleRenameStart}>
               <IconPencil className="mr-2 size-4" />
               Rename
             </ContextMenuItem>

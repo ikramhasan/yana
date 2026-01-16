@@ -160,6 +160,31 @@ class FileTreeService {
   }
 
   /**
+   * Rename a file or directory at the specified path.
+   * @param path - Current absolute path
+   * @param newPath - Target absolute path
+   * @returns Promise resolving to the FileNode representing the renamed path
+   * @throws Error if renaming fails
+   */
+  async renamePath(path: string, newPath: string): Promise<FileNode> {
+    try {
+      await info(`Renaming: ${path} to ${newPath}`);
+      const node = await invoke<FileNode>('rename_path', { path, newPath });
+      return node;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      await logError(`Failed to rename ${path}: ${errorMessage}`);
+      
+      await message(`Failed to rename:\n\n${errorMessage}`, {
+        title: 'Rename Error',
+        kind: 'error',
+      });
+      
+      throw new Error(`Failed to rename: ${errorMessage}`);
+    }
+  }
+
+  /**
    * Start watching a directory for filesystem changes.
    * Emits events when files or folders are created, deleted, renamed, or modified.
    * Events are debounced to prevent excessive updates.

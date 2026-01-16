@@ -29,6 +29,7 @@ pub fn run() {
             commands::create_new_note,
             commands::delete_path,
             commands::duplicate_file,
+            commands::rename_path,
             commands::start_watching,
             commands::stop_watching,
         ])

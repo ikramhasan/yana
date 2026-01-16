@@ -168,6 +168,37 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectFile]);
 
+  /**
+   * Rename a file or directory at the specified path.
+   * If the currently selected file is renamed, updates the selection.
+   */
+  const renameNode = useCallback(async (path: string, newPath: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const newNode = await fileTreeService.renamePath(path, newPath);
+      
+      // If the selected file was renamed (or is inside a renamed folder), update it
+      if (selectedFile) {
+          if (selectedFile.path === path) {
+              setSelectedFile(newNode);
+          } else if (selectedFile.path.startsWith(path + '/')) {
+              // Path inside renamed folder
+              setSelectedFile(null);
+              setFileContent(null);
+          }
+      }
+      
+      // Backend watcher will trigger a refresh
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to rename');
+      setError(error);
+      console.error('Failed to rename:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedFile]);
+
   // Load file tree when vault changes
   useEffect(() => {
     if (!currentVault?.path) {
@@ -256,6 +287,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     createNewNote,
     deleteNode,
     duplicateFile,
+    renameNode,
     refresh,
   };
 

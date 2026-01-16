@@ -52,6 +52,8 @@ export interface FileTreeContextValue {
   deleteNode: (path: string) => Promise<void>;
   /** Duplicate a file at the specified path */
   duplicateFile: (path: string) => Promise<void>;
+  /** Rename a file or directory at the specified path */
+  renameNode: (path: string, newPath: string) => Promise<void>;
   /** Refresh the file tree from the filesystem */
   refresh: () => Promise<void>;
 }

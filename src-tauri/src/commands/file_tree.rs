@@ -351,6 +351,40 @@ pub async fn duplicate_file(path: String) -> Result<FileNode, String> {
     }
 }
 
+/// Rename a file or directory at the specified path
+#[tauri::command]
+pub async fn rename_path(path: String, new_path: String) -> Result<FileNode, String> {
+    log::info!("Renaming: {} to {}", path, new_path);
+    
+    let source_path = Path::new(&path);
+    let target_path = Path::new(&new_path);
+
+    if !source_path.exists() {
+        let error_msg = format!("Source path does not exist: {}", path);
+        log::error!("{}", error_msg);
+        return Err(error_msg);
+    }
+
+    if target_path.exists() {
+        let error_msg = format!("Target path already exists: {}", new_path);
+        log::error!("{}", error_msg);
+        return Err(error_msg);
+    }
+
+    match fs::rename(source_path, target_path) {
+        Ok(_) => {
+            log::info!("Successfully renamed '{}' to '{}'", path, new_path);
+            let node_type = if target_path.is_dir() { "folder" } else { "file" };
+            Ok(FileNode::new(target_path, node_type, None))
+        }
+        Err(e) => {
+            let error_msg = format!("Failed to rename file: {}", e);
+            log::error!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
 /// Start watching a directory for changes
 #[tauri::command]
 pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> {
