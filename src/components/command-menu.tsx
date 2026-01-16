@@ -10,7 +10,7 @@ import {
   IconLayoutSidebar,
   IconKeyboard,
 } from "@tabler/icons-react";
-import { useTheme } from "next-themes";
+import { useThemeTransition } from "@/hooks/use-theme-transition";
 import { useVault } from "@/contexts/vault-context";
 import { useFileTree } from "@/contexts/file-tree-context";
 import type { FileNode } from "@/types/file-tree";
@@ -36,7 +36,7 @@ export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
   const [shortcutsOpen, setShortcutsOpen] = React.useState(false);
   const { toggleSidebar } = useSidebar();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useThemeTransition();
   const { currentVault } = useVault();
   const { nodes, selectFile, createNewNote, createNewFolder } = useFileTree();
 
@@ -63,9 +63,9 @@ export function CommandMenu() {
     };
   }, []);
 
-  const runCommand = React.useCallback((command: () => unknown) => {
+  const runCommand = React.useCallback((command: (e?: React.MouseEvent | MouseEvent) => unknown, e?: React.MouseEvent | MouseEvent) => {
     setOpen(false);
-    command();
+    command(e);
   }, []);
 
   const allFiles = React.useMemo(() => {

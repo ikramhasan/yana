@@ -141,7 +141,7 @@
   .milkdown {
     @apply outline-none;
   }
-  
+
   .milkdown .editor {
     @apply outline-none min-h-[500px];
   }
@@ -161,7 +161,7 @@
     font-size: 1rem !important; /* text-base */
     line-height: 1.5rem !important;
     background-color: transparent !important;
-    
+
     --crepe-font-title: var(--font-sans), monospace !important;
     --crepe-font-default: var(--font-sans), monospace !important;
     --crepe-font-code: var(--font-sans), monospace !important;
@@ -240,7 +240,7 @@
     --crepe-color-selected: var(--accent) !important;
     --crepe-color-inline-area: #27272A !important;
     --crepe-color-surface: #19191C !important;
-    
+
     --crepe-shadow-1: 0px 1px 2px 0px rgba(255, 255, 255, 0.1), 0px 1px 3px 1px rgba(255, 255, 255, 0.05) !important;
     --crepe-shadow-2: 0px 1px 2px 0px rgba(255, 255, 255, 0.1), 0px 2px 6px 2px rgba(255, 255, 255, 0.05) !important;
   }
@@ -276,7 +276,7 @@
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
   }
-  
+
   .milkdown .milkdown-code-block .tools .tools-button-group button {
     border-radius: 0px !important;
   }
@@ -455,4 +455,9 @@
   .yana-milkdown .milkdown .editor a:hover {
     color: #60a5fa !important;
   }
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }

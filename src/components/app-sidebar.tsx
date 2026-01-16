@@ -5,6 +5,7 @@ import {
     SidebarHeader,
     SidebarMenuItem,
     SidebarMenuButton,
+    SidebarMenu,
     SidebarRail,
   } from "@/components/ui/sidebar";
   import { VaultSwitcher } from "./vault-switcher";
@@ -41,15 +42,28 @@ import {
     return (
       <Sidebar>
         <ContextMenu>
-          <ContextMenuTrigger className="flex flex-col min-h-full">
-            <SidebarHeader data-tauri-drag-region>
-              <VaultSwitcher />
-              <SearchBar />
-            </SidebarHeader>
-            <SidebarContent>
-              <FileTree />
-              <div className="flex-1" />
-            </SidebarContent>
+          <ContextMenuTrigger asChild>
+            <div className="flex flex-col h-full">
+              <SidebarHeader data-tauri-drag-region>
+                <VaultSwitcher />
+                <SearchBar />
+              </SidebarHeader>
+              <SidebarContent>
+                <FileTree />
+              </SidebarContent>
+              <SidebarFooter>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SettingsDialog>
+                      <SidebarMenuButton>
+                        Settings
+                        <IconSettings className="ml-auto" />
+                      </SidebarMenuButton>
+                    </SettingsDialog>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarFooter>
+            </div>
           </ContextMenuTrigger>
           <ContextMenuContent>
             <ContextMenuItem onClick={handleNewNote}>
@@ -62,16 +76,6 @@ import {
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
-        <SidebarFooter>
-          <SidebarMenuItem>
-            <SettingsDialog>
-              <SidebarMenuButton>
-                Settings
-                <IconSettings className="ml-auto" />
-              </SidebarMenuButton>
-            </SettingsDialog>
-          </SidebarMenuItem>
-        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "next-themes";
+import { useThemeTransition } from "@/hooks/use-theme-transition";
 import { useSettings } from "@/contexts/settings-context";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { IconSun, IconMoon, IconDeviceDesktop } from "@tabler/icons-react";
 
 export function GeneralTab() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useThemeTransition();
   const { settings, updateSetting } = useSettings();
 
   return (
@@ -27,7 +27,11 @@ export function GeneralTab() {
           type="single"
           value={theme ?? undefined}
           onValueChange={(val: string | null) => {
-            if (val) setTheme(val as "light" | "dark" | "system");
+            if (val) {
+              // We don't easily get the event here from ToggleGroup's onValueChange,
+              // but we can try to find the button that was clicked or just use center.
+              setTheme(val as "light" | "dark" | "system");
+            }
           }}
           className="grid grid-cols-3 gap-3"
         >
