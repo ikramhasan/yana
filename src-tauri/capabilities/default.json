@@ -9,6 +9,13 @@
     "core:default",
     "dialog:default",
     "log:default",
-    "store:default"
+    "store:default",
+    {
+      "identifier": "fs:allow-read",
+      "allow": [
+        { "path": "**" }
+      ]
+    },
+    "fs:default"
   ]
 }

@@ -8,6 +8,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .manage(Mutex::new(WatcherState {
             watcher: None,
             watching_path: None,
@@ -32,6 +33,7 @@ pub fn run() {
             commands::rename_path,
             commands::start_watching,
             commands::stop_watching,
+            commands::save_image_to_assets,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -263,6 +263,43 @@ class FileTreeService {
       });
     };
   }
+
+  /**
+   * Save an image to the assets folder next to a markdown file.
+   * Creates the assets folder if it doesn't exist.
+   * @param mdFilePath - Absolute path to the markdown file
+   * @param imageFile - The image File object to save
+   * @returns Promise resolving to the relative path to the saved image (e.g., "assets/image.png")
+   * @throws Error if save fails
+   */
+  async saveImageToAssets(mdFilePath: string, imageFile: File): Promise<string> {
+    try {
+      await info(`Saving image to assets for: ${mdFilePath}`);
+
+      // Convert File to Uint8Array
+      const arrayBuffer = await imageFile.arrayBuffer();
+      const imageData = Array.from(new Uint8Array(arrayBuffer));
+
+      const relativePath = await invoke<string>('save_image_to_assets', {
+        mdFilePath,
+        imageName: imageFile.name,
+        imageData,
+      });
+
+      await info(`Saved image to: ${relativePath}`);
+      return relativePath;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      await logError(`Failed to save image to assets: ${errorMessage}`);
+
+      await message(`Failed to save image:\n\n${errorMessage}`, {
+        title: 'Image Save Error',
+        kind: 'error',
+      });
+
+      throw new Error(`Failed to save image: ${errorMessage}`);
+    }
+  }
 }
 
 export const fileTreeService = new FileTreeService();

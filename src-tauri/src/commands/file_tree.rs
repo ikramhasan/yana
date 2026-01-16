@@ -511,3 +511,97 @@ pub async fn stop_watching(app: AppHandle) -> Result<(), String> {
     log::info!("File watcher stopped successfully");
     Ok(())
 }
+
+/// Save an image to the assets folder next to a markdown file
+/// Creates the assets folder if it doesn't exist
+/// If an identical file already exists, reuses it instead of creating a duplicate
+/// Returns the relative path to the saved image (e.g., "assets/image.png")
+#[tauri::command]
+pub async fn save_image_to_assets(
+    md_file_path: String,
+    image_name: String,
+    image_data: Vec<u8>,
+) -> Result<String, String> {
+    log::info!("Saving image '{}' for markdown file: {}", image_name, md_file_path);
+
+    let md_path = Path::new(&md_file_path);
+
+    // Get the parent directory of the markdown file
+    let parent_dir = md_path.parent().ok_or_else(|| {
+        let error_msg = "Could not determine parent directory of markdown file".to_string();
+        log::error!("{}", error_msg);
+        error_msg
+    })?;
+
+    // Create the assets folder path
+    let assets_dir = parent_dir.join("assets");
+
+    // Create the assets folder if it doesn't exist
+    if !assets_dir.exists() {
+        fs::create_dir(&assets_dir).map_err(|e| {
+            let error_msg = format!("Failed to create assets directory: {}", e);
+            log::error!("{}", error_msg);
+            error_msg
+        })?;
+        log::info!("Created assets directory: {}", assets_dir.display());
+    }
+
+    // Check if file with same name exists and has identical content
+    let initial_path = assets_dir.join(&image_name);
+    if initial_path.exists() {
+        if let Ok(existing_data) = fs::read(&initial_path) {
+            if existing_data == image_data {
+                let relative_path = format!("assets/{}", image_name);
+                log::info!("Reusing existing identical image: {}", initial_path.display());
+                return Ok(relative_path);
+            }
+        }
+    }
+
+    // Check numbered variants for identical content
+    let path = Path::new(&image_name);
+    let stem = path.file_stem().and_then(|s| s.to_str()).unwrap_or("image");
+    let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("png");
+
+    let mut counter = 1;
+    loop {
+        let numbered_name = format!("{}-{}.{}", stem, counter, extension);
+        let numbered_path = assets_dir.join(&numbered_name);
+
+        if !numbered_path.exists() {
+            break;
+        }
+
+        if let Ok(existing_data) = fs::read(&numbered_path) {
+            if existing_data == image_data {
+                let relative_path = format!("assets/{}", numbered_name);
+                log::info!("Reusing existing identical image: {}", numbered_path.display());
+                return Ok(relative_path);
+            }
+        }
+        counter += 1;
+    }
+
+    // No identical file found, create new file
+    let mut final_name = image_name.clone();
+    let mut image_path = assets_dir.join(&final_name);
+    let mut counter = 1;
+
+    while image_path.exists() {
+        final_name = format!("{}-{}.{}", stem, counter, extension);
+        image_path = assets_dir.join(&final_name);
+        counter += 1;
+    }
+
+    // Write the image data to the file
+    fs::write(&image_path, &image_data).map_err(|e| {
+        let error_msg = format!("Failed to save image: {}", e);
+        log::error!("{}", error_msg);
+        error_msg
+    })?;
+
+    let relative_path = format!("assets/{}", final_name);
+    log::info!("Successfully saved image to: {}", image_path.display());
+
+    Ok(relative_path)
+}

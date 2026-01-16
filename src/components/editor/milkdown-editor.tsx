@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Crepe } from '@milkdown/crepe';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
+import { convertFileSrc } from '@tauri-apps/api/core';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { fileTreeService } from "@/services/file-tree-service";
 import { useDebouncedCallback } from "use-debounce";
@@ -13,19 +14,118 @@ interface MilkdownEditorProps {
   filePath?: string;
 }
 
+// Regex to match markdown images: ![alt](src "title") or ![alt](src)
+const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+
+/**
+ * Check if a URL is a relative path (not http/https/blob/data/asset)
+ */
+function isRelativePath(src: string): boolean {
+  return !src.startsWith('http://') &&
+         !src.startsWith('https://') &&
+         !src.startsWith('blob:') &&
+         !src.startsWith('data:') &&
+         !src.startsWith('asset://');
+}
+
+/**
+ * Get the directory path from a file path
+ */
+function getDirectory(filePath: string): string {
+  const lastSlash = filePath.lastIndexOf('/');
+  return lastSlash !== -1 ? filePath.substring(0, lastSlash) : filePath;
+}
+
+/**
+ * Convert relative image paths in markdown to asset:// URLs for display
+ */
+function convertToAssetUrls(markdown: string, mdFilePath: string): string {
+  const mdDir = getDirectory(mdFilePath);
+
+  return markdown.replace(IMAGE_REGEX, (match, alt, src) => {
+    if (isRelativePath(src)) {
+      const absolutePath = `${mdDir}/${src}`;
+      const assetUrl = convertFileSrc(absolutePath);
+      // Preserve the rest of the match structure
+      return match.replace(src, assetUrl);
+    }
+    return match;
+  });
+}
+
+/**
+ * Convert asset:// URLs back to relative paths for saving
+ */
+function convertToRelativePaths(markdown: string, mdFilePath: string): string {
+  const mdDir = getDirectory(mdFilePath);
+  // Match asset://localhost/ URLs and convert back to relative paths
+  const assetUrlPrefix = convertFileSrc(mdDir + '/');
+
+  // Replace and decode URL-encoded characters (e.g., %2F -> /)
+  return markdown.replaceAll(assetUrlPrefix, '').replace(
+    /!\[([^\]]*)\]\(([^)]+)\)/g,
+    (match, alt, src) => {
+      // Only decode if it looks URL-encoded
+      if (src.includes('%')) {
+        try {
+          const decoded = decodeURIComponent(src);
+          return `![${alt}](${decoded})`;
+        } catch {
+          return match;
+        }
+      }
+      return match;
+    }
+  );
+}
+
 const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps) => {
+  const filePathRef = useRef(filePath);
+
+  // Keep the ref updated with the latest filePath
+  useEffect(() => {
+    filePathRef.current = filePath;
+  }, [filePath]);
+
+  // Pre-process markdown: convert relative paths to asset:// URLs for display
+  const displayMarkdown = filePath && markdown
+    ? convertToAssetUrls(markdown, filePath)
+    : markdown ?? "";
+
   const saveFile = useDebouncedCallback((path: string, content: string) => {
-    fileTreeService.saveFile(path, content);
+    // Convert asset:// URLs back to relative paths before saving
+    const markdownToSave = convertToRelativePaths(content, path);
+    fileTreeService.saveFile(path, markdownToSave);
   }, 1000);
 
   const { get, loading } = useEditor((root) => {
     const crepe = new Crepe({
       root,
-      defaultValue: markdown ?? "",
+      defaultValue: displayMarkdown,
       featureConfigs: {
-        // Ensure block edit is explicitly enabled and configured if needed
         [Crepe.Feature.BlockEdit]: {
-        }
+        },
+        [Crepe.Feature.ImageBlock]: {
+          onUpload: async (file: File) => {
+            const currentFilePath = filePathRef.current;
+            if (!currentFilePath) {
+              // Fallback to blob URL if no file path available
+              return URL.createObjectURL(file);
+            }
+
+            try {
+              // Save image to assets folder and get relative path
+              const relativePath = await fileTreeService.saveImageToAssets(currentFilePath, file);
+              // Convert to asset:// URL for display
+              const mdDir = getDirectory(currentFilePath);
+              const absolutePath = `${mdDir}/${relativePath}`;
+              return convertFileSrc(absolutePath);
+            } catch {
+              // Fallback to blob URL on error
+              return URL.createObjectURL(file);
+            }
+          },
+        },
       }
     });
 
