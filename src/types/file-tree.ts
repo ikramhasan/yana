@@ -50,6 +50,8 @@ export interface FileTreeContextValue {
   createNewNote: (parentPath: string) => Promise<void>;
   /** Delete a file or directory at the specified path */
   deleteNode: (path: string) => Promise<void>;
+  /** Duplicate a file at the specified path */
+  duplicateFile: (path: string) => Promise<void>;
   /** Refresh the file tree from the filesystem */
   refresh: () => Promise<void>;
 }

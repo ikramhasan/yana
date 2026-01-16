@@ -105,7 +105,7 @@ interface FileTreeNodeProps {
 }
 
 function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodeProps) {
-  const { createNewNote, deleteNode } = useFileTree()
+  const { createNewNote, deleteNode, duplicateFile } = useFileTree()
   const isFolder = node.type === "folder"
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -127,6 +127,13 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
     }
   }
   
+  const handleDuplicate = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!isFolder) {
+      await duplicateFile(node.path)
+    }
+  }
+
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation()
     const confirmed = await ask(
@@ -218,7 +225,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
               <IconFileText className="mr-2 size-4" />
               Open
             </ContextMenuItem>
-            <ContextMenuItem>
+            <ContextMenuItem onClick={handleDuplicate}>
               <IconCopy className="mr-2 size-4" />
               Duplicate
             </ContextMenuItem>

@@ -302,6 +302,55 @@ pub async fn delete_path(path: String) -> Result<(), String> {
     }
 }
 
+/// Duplicate a file at the specified path
+#[tauri::command]
+pub async fn duplicate_file(path: String) -> Result<FileNode, String> {
+    log::info!("Duplicating file: {}", path);
+    
+    let source_path = Path::new(&path);
+    if !source_path.exists() || !source_path.is_file() {
+        let error_msg = format!("File does not exist or is not a file: {}", path);
+        log::error!("{}", error_msg);
+        return Err(error_msg);
+    }
+
+    let parent = source_path.parent().ok_or_else(|| "Could not determine parent directory".to_string())?;
+    let file_stem = source_path.file_stem().and_then(|s| s.to_str()).ok_or_else(|| "Invalid filename stem".to_string())?;
+    let extension = source_path.extension().and_then(|e| e.to_str()).unwrap_or("");
+
+    let mut new_file_name = if extension.is_empty() {
+        format!("{} copy", file_stem)
+    } else {
+        format!("{} copy.{}", file_stem, extension)
+    };
+    
+    let mut target_path = parent.join(&new_file_name);
+    let mut counter = 1;
+
+    // Find a unique name
+    while target_path.exists() {
+        new_file_name = if extension.is_empty() {
+            format!("{} copy {}", file_stem, counter)
+        } else {
+            format!("{} copy {}.{}", file_stem, counter, extension)
+        };
+        target_path = parent.join(&new_file_name);
+        counter += 1;
+    }
+
+    match fs::copy(source_path, &target_path) {
+        Ok(_) => {
+            log::info!("Successfully duplicated file to: {}", target_path.display());
+            Ok(FileNode::new(&target_path, "file", None))
+        }
+        Err(e) => {
+            let error_msg = format!("Failed to duplicate file: {}", e);
+            log::error!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
 /// Start watching a directory for changes
 #[tauri::command]
 pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> {

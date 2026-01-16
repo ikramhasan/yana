@@ -136,6 +136,30 @@ class FileTreeService {
   }
 
   /**
+   * Duplicate a file at the specified path.
+   * @param path - Absolute path to the file to duplicate
+   * @returns Promise resolving to the FileNode of the newly created duplicate
+   * @throws Error if duplication fails
+   */
+  async duplicateFile(path: string): Promise<FileNode> {
+    try {
+      await info(`Duplicating: ${path}`);
+      const node = await invoke<FileNode>('duplicate_file', { path });
+      return node;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      await logError(`Failed to duplicate ${path}: ${errorMessage}`);
+      
+      await message(`Failed to duplicate:\n\n${errorMessage}`, {
+        title: 'Duplication Error',
+        kind: 'error',
+      });
+      
+      throw new Error(`Failed to duplicate: ${errorMessage}`);
+    }
+  }
+
+  /**
    * Start watching a directory for filesystem changes.
    * Emits events when files or folders are created, deleted, renamed, or modified.
    * Events are debounced to prevent excessive updates.

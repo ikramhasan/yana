@@ -148,6 +148,26 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectedFile]);
 
+  /**
+   * Duplicate a file at the specified path.
+   * Automatically selects the new duplicate after creation.
+   */
+  const duplicateFile = useCallback(async (path: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const newNode = await fileTreeService.duplicateFile(path);
+      // Select the newly created duplicate
+      await selectFile(newNode);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to duplicate');
+      setError(error);
+      console.error('Failed to duplicate:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectFile]);
+
   // Load file tree when vault changes
   useEffect(() => {
     if (!currentVault?.path) {
@@ -235,6 +255,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     selectFile,
     createNewNote,
     deleteNode,
+    duplicateFile,
     refresh,
   };
 
