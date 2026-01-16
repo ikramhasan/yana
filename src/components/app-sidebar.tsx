@@ -5,6 +5,7 @@ import {
     SidebarHeader,
     SidebarMenuItem,
     SidebarMenuButton,
+    SidebarRail,
   } from "@/components/ui/sidebar";
   import { VaultSwitcher } from "./vault-switcher";
   import SearchBar from "./search-bar";
@@ -67,7 +68,7 @@ import {
             </SettingsDialog>
           </SidebarMenuItem>
         </SidebarFooter>
+        <SidebarRail />
       </Sidebar>
     );
   }
-  
