@@ -13,6 +13,7 @@ import {
 import { useTheme } from "next-themes";
 import { useVault } from "@/contexts/vault-context";
 import { useFileTree } from "@/contexts/file-tree-context";
+import type { FileNode } from "@/types/file-tree";
 
 import {
   CommandDialog,
@@ -37,7 +38,7 @@ export function CommandMenu() {
   const { toggleSidebar } = useSidebar();
   const { theme, setTheme } = useTheme();
   const { currentVault } = useVault();
-  const { createNewNote, createNewFolder } = useFileTree();
+  const { nodes, selectFile, createNewNote, createNewFolder } = useFileTree();
 
   React.useEffect(() => {
     const handleOpenOpen = () => setOpen(true);
@@ -66,6 +67,22 @@ export function CommandMenu() {
     setOpen(false);
     command();
   }, []);
+
+  const allFiles = React.useMemo(() => {
+    const files: FileNode[] = [];
+    const flatten = (nodesList: FileNode[]) => {
+      for (const node of nodesList) {
+        if (node.type === "file") {
+          files.push(node);
+        }
+        if (node.children) {
+          flatten(node.children);
+        }
+      }
+    };
+    flatten(nodes);
+    return files;
+  }, [nodes]);
 
   return (
     <>
@@ -124,6 +141,23 @@ export function CommandMenu() {
                 <span>Keyboard Shortcuts</span>
               </div>
             </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Files">
+            {allFiles.map((file) => (
+              <CommandItem
+                key={file.id}
+                onSelect={() => {
+                  runCommand(() => selectFile(file));
+                }}
+              >
+                <IconFileText className="mr-2 size-4" />
+                <span>{file.name}</span>
+                <span className="text-muted-foreground ml-2 text-[10px] truncate">
+                  {file.path.replace(currentVault?.path ?? "", "")}
+                </span>
+              </CommandItem>
+            ))}
           </CommandGroup>
         </CommandList>
       </Command>
