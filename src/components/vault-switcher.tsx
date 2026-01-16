@@ -28,7 +28,7 @@ export function VaultSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-full text-left"
             >
-              <div className="bg-sidebar-accent text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+              <div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <IconFolder className="size-4" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">

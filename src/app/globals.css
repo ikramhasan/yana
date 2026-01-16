@@ -327,6 +327,11 @@
     font-weight: 500;
   }
 
+  .milkdown .milkdown-link-preview > .link-preview {
+    border-radius: 0px !important;
+    box-shadow: none !important;
+  }
+
   /* Style the task list checkboxes to be exactly like the UI Checkbox */
   .milkdown .milkdown-list-item-block li .label-wrapper .checked,
   .milkdown .milkdown-list-item-block li .label-wrapper .unchecked {
