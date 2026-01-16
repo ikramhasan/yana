@@ -8,6 +8,8 @@
 export interface Settings {
   /** Whether to hide the fixed editor toolbar */
   hideEditorToolbar: boolean;
+  /** Maximum number of tabs allowed (default: 5) */
+  maxTabs: number;
 }
 
 /**

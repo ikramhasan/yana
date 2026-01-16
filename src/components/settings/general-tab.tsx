@@ -6,6 +6,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import { IconSun, IconMoon, IconDeviceDesktop } from "@tabler/icons-react";
 
 export function GeneralTab() {
@@ -55,6 +56,42 @@ export function GeneralTab() {
             <span className="text-xs font-bold uppercase">System</span>
           </ToggleGroupItem>
         </ToggleGroup>
+      </div>
+
+      <Separator />
+
+      {/* Tabs Section */}
+      <div className="space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-sm font-medium">Tabs</h3>
+          <p className="text-xs text-muted-foreground">
+            Configure how tabs behave
+          </p>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="max-tabs" className="text-sm font-normal">
+              Maximum open tabs
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Oldest tabs will close automatically when limit is reached
+            </p>
+          </div>
+          <Input
+            id="max-tabs"
+            type="number"
+            min={1}
+            max={20}
+            value={settings.maxTabs}
+            onChange={(e) => {
+              const value = parseInt(e.target.value, 10);
+              if (!isNaN(value) && value >= 1 && value <= 20) {
+                updateSetting("maxTabs", value);
+              }
+            }}
+            className="w-20"
+          />
+        </div>
       </div>
 
       {/* <Separator /> */}

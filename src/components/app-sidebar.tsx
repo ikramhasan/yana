@@ -12,6 +12,7 @@ import {
   
   import { SettingsDialog } from "./settings";
   import { FileTree } from "./file-tree";
+  import { OpenTabs } from "./open-tabs";
   import {
     ContextMenu,
     ContextMenuContent,
@@ -38,6 +39,7 @@ import {
           <SearchBar />
         </SidebarHeader>
         <SidebarContent>
+          <OpenTabs />
           <ContextMenu>
             <ContextMenuTrigger className="flex min-h-full w-full flex-col">
               <FileTree />

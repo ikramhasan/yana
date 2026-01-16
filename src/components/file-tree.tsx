@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Tree, Folder, File, type TreeViewElement } from "@/components/ui/file-tree"
 import { useFileTree } from "@/contexts/file-tree-context"
+import { useTabs } from "@/contexts/tabs-context"
 import type { FileNode } from "@/types/file-tree"
 import { ask } from "@tauri-apps/plugin-dialog"
 
@@ -59,9 +60,16 @@ function createNodeMap(nodes: FileNode[]): Map<string, FileNode> {
 
 export function FileTree() {
   const { nodes, selectedFile, isLoading, error, selectFile, createNewNote, deleteNode, duplicateFile, renameNode } = useFileTree()
+  const { openTab } = useTabs()
 
   const treeElements = React.useMemo(() => convertToTreeElements(nodes), [nodes])
   const nodeMap = React.useMemo(() => createNodeMap(nodes), [nodes])
+
+  // Wrapper that opens tab and selects file
+  const handleFileSelect = React.useCallback((node: FileNode) => {
+    openTab(node)
+    selectFile(node)
+  }, [openTab, selectFile])
 
   // Show loading state
   if (isLoading && nodes.length === 0) {
@@ -121,7 +129,7 @@ export function FileTree() {
             element={element}
             nodeMap={nodeMap}
             selectedId={selectedFile?.id ?? undefined}
-            onSelect={selectFile}
+            onSelect={handleFileSelect}
             onCreateNote={createNewNote}
             onDelete={deleteNode}
             onDuplicate={duplicateFile}
