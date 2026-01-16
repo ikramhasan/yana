@@ -90,6 +90,52 @@ class FileTreeService {
   }
 
   /**
+   * Create a new markdown note in the specified directory.
+   * @param path - Absolute path to the directory where the note should be created
+   * @returns Promise resolving to the FileNode of the newly created note
+   * @throws Error if creation fails
+   */
+  async createNewNote(path: string): Promise<FileNode> {
+    try {
+      await info(`Creating new note in: ${path}`);
+      const node = await invoke<FileNode>('create_new_note', { path });
+      return node;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      await logError(`Failed to create new note in ${path}: ${errorMessage}`);
+      
+      await message(`Failed to create new note:\n\n${errorMessage}`, {
+        title: 'New Note Error',
+        kind: 'error',
+      });
+      
+      throw new Error(`Failed to create new note: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Delete a file or directory at the specified path.
+   * @param path - Absolute path to the file or directory to delete
+   * @throws Error if deletion fails
+   */
+  async deletePath(path: string): Promise<void> {
+    try {
+      await info(`Deleting: ${path}`);
+      await invoke('delete_path', { path });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      await logError(`Failed to delete ${path}: ${errorMessage}`);
+      
+      await message(`Failed to delete:\n\n${errorMessage}`, {
+        title: 'Deletion Error',
+        kind: 'error',
+      });
+      
+      throw new Error(`Failed to delete: ${errorMessage}`);
+    }
+  }
+
+  /**
    * Start watching a directory for filesystem changes.
    * Emits events when files or folders are created, deleted, renamed, or modified.
    * Events are debounced to prevent excessive updates.

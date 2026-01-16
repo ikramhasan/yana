@@ -102,6 +102,52 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectedFile]);
 
+  /**
+   * Create a new markdown note in the specified directory.
+   * Automatically selects the new note after creation.
+   */
+  const createNewNote = useCallback(async (parentPath: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const newNode = await fileTreeService.createNewNote(parentPath);
+      // Backend watcher will likely trigger a refresh, but we can also manually select it
+      await selectFile(newNode);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to create new note');
+      setError(error);
+      console.error('Failed to create new note:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectFile]);
+
+  /**
+   * Delete a file or directory at the specified path.
+   * If the currently selected file is deleted, clears the selection.
+   */
+  const deleteNode = useCallback(async (path: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await fileTreeService.deletePath(path);
+      
+      // If the selected file was deleted (or is inside a deleted folder), clear it
+      if (selectedFile && (selectedFile.path === path || selectedFile.path.startsWith(path + '/'))) {
+        setSelectedFile(null);
+        setFileContent(null);
+      }
+      
+      // Backend watcher will trigger a refresh
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to delete');
+      setError(error);
+      console.error('Failed to delete:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedFile]);
+
   // Load file tree when vault changes
   useEffect(() => {
     if (!currentVault?.path) {
@@ -187,6 +233,8 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     error,
     selectFile,
+    createNewNote,
+    deleteNode,
     refresh,
   };
 

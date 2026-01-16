@@ -18,8 +18,19 @@ import {
     ContextMenuItem,
     ContextMenuTrigger,
   } from "@/components/ui/context-menu";
+  import { useVault } from "@/contexts/vault-context";
+  import { useFileTree } from "@/contexts/file-tree-context";
   
   export function AppSidebar() {
+    const { currentVault } = useVault();
+    const { createNewNote } = useFileTree();
+
+    const handleNewNote = () => {
+      if (currentVault?.path) {
+        createNewNote(currentVault.path);
+      }
+    };
+
     return (
       <Sidebar>
         <SidebarHeader>
@@ -33,7 +44,7 @@ import {
               <div className="flex-1" />
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuItem>
+              <ContextMenuItem onClick={handleNewNote}>
                 <IconFilePlus className="mr-2 size-4" />
                 New note
               </ContextMenuItem>

@@ -26,6 +26,8 @@ pub fn run() {
             commands::scan_directory,
             commands::read_file,
             commands::write_file,
+            commands::create_new_note,
+            commands::delete_path,
             commands::start_watching,
             commands::stop_watching,
         ])

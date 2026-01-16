@@ -234,6 +234,74 @@ pub async fn write_file(path: String, content: String) -> Result<(), String> {
     }
 }
 
+/// Create a new markdown note in the specified directory
+#[tauri::command]
+pub async fn create_new_note(path: String) -> Result<FileNode, String> {
+    log::info!("Creating new note in: {}", path);
+    
+    let dir_path = Path::new(&path);
+    if !dir_path.exists() || !dir_path.is_dir() {
+        let error_msg = format!("Invalid parent directory: {}", path);
+        log::error!("{}", error_msg);
+        return Err(error_msg);
+    }
+
+    let mut file_name = "Untitled.md".to_string();
+    let mut file_path = dir_path.join(&file_name);
+    let mut counter = 1;
+
+    // Find a unique name like "Untitled.md", "Untitled 1.md", etc.
+    while file_path.exists() {
+        file_name = format!("Untitled {}.md", counter);
+        file_path = dir_path.join(&file_name);
+        counter += 1;
+    }
+
+    match fs::write(&file_path, "") {
+        Ok(_) => {
+            log::info!("Successfully created new note: {}", file_path.display());
+            // Return the FileNode for the newly created file
+            Ok(FileNode::new(&file_path, "file", None))
+        }
+        Err(e) => {
+            let error_msg = format!("Failed to create new note: {}", e);
+            log::error!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
+/// Delete a file or directory at the specified path
+#[tauri::command]
+pub async fn delete_path(path: String) -> Result<(), String> {
+    log::info!("Deleting path: {}", path);
+    
+    let target_path = Path::new(&path);
+    if !target_path.exists() {
+        let error_msg = format!("Path does not exist: {}", path);
+        log::error!("{}", error_msg);
+        return Err(error_msg);
+    }
+
+    let result = if target_path.is_dir() {
+        fs::remove_dir_all(target_path)
+    } else {
+        fs::remove_file(target_path)
+    };
+
+    match result {
+        Ok(_) => {
+            log::info!("Successfully deleted: {}", path);
+            Ok(())
+        }
+        Err(e) => {
+            let error_msg = format!("Failed to delete '{}': {}", path, e);
+            log::error!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
 /// Start watching a directory for changes
 #[tauri::command]
 pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> {

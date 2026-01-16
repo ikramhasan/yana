@@ -46,6 +46,10 @@ export interface FileTreeContextValue {
   error: Error | null;
   /** Select a file and load its content */
   selectFile: (node: FileNode) => Promise<void>;
+  /** Create a new markdown note in the specified directory */
+  createNewNote: (parentPath: string) => Promise<void>;
+  /** Delete a file or directory at the specified path */
+  deleteNode: (path: string) => Promise<void>;
   /** Refresh the file tree from the filesystem */
   refresh: () => Promise<void>;
 }

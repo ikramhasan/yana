@@ -95,6 +95,8 @@ export function FileTree() {
   )
 }
 
+import { ask } from "@tauri-apps/plugin-dialog"
+
 interface FileTreeNodeProps {
   node: FileNode
   selectedId: string | null
@@ -103,6 +105,7 @@ interface FileTreeNodeProps {
 }
 
 function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodeProps) {
+  const { createNewNote, deleteNode } = useFileTree()
   const isFolder = node.type === "folder"
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -115,7 +118,30 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
       onSelect(node)
     }
   }
+
+  const handleNewNote = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isFolder) {
+      createNewNote(node.path)
+      setIsOpen(true) // Open folder if it's not open
+    }
+  }
   
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const confirmed = await ask(
+      `Are you sure you want to delete ${node.name}? This action cannot be undone.`,
+      {
+        title: 'Delete confirmation',
+        kind: 'warning',
+      }
+    )
+
+    if (confirmed) {
+      await deleteNode(node.path)
+    }
+  }
+
   // Base padding (8px) + Indentation per level (12px)
   const paddingLeft = 8 + depth * 12
 
@@ -141,7 +167,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
               </SidebarMenuButton>
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuItem>
+              <ContextMenuItem onClick={handleNewNote}>
                 <IconFilePlus className="mr-2 size-4" />
                 New note
               </ContextMenuItem>
@@ -153,7 +179,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
                 <IconPencil className="mr-2 size-4" />
                 Rename
               </ContextMenuItem>
-              <ContextMenuItem className="text-destructive">
+              <ContextMenuItem className="text-destructive" onClick={handleDelete}>
                 <IconTrash className="mr-2 size-4" />
                 Delete
               </ContextMenuItem>
@@ -200,7 +226,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
               <IconPencil className="mr-2 size-4" />
               Rename
             </ContextMenuItem>
-            <ContextMenuItem className="text-destructive">
+            <ContextMenuItem className="text-destructive" onClick={handleDelete}>
               <IconTrash className="mr-2 size-4" />
               Delete
             </ContextMenuItem>
