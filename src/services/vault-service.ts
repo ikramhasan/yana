@@ -31,7 +31,7 @@ class VaultService {
       return [];
     } catch (err) {
       await logError(`Failed to load vaults: ${err}`);
-      return [];
+      throw err; // Re-throw to let the context handle it
     }
   }
 

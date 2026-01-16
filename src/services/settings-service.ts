@@ -38,7 +38,7 @@ class SettingsService {
       return DEFAULT_SETTINGS;
     } catch (err) {
       await logError(`Failed to load settings: ${err}`);
-      return DEFAULT_SETTINGS;
+      throw err; // Re-throw to let the context handle it
     }
   }
 

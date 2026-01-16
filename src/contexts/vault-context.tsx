@@ -31,9 +31,9 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
         const loadedVaults = await vaultService.loadVaults();
         setVaults(loadedVaults);
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Failed to load vaults');
+        const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
-        console.error('Failed to load vaults:', error);
+        console.error('Failed to load vaults:', err);
       } finally {
         setIsLoading(false);
       }
@@ -54,9 +54,9 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
       setVaults((prev) => [...prev, newVault]);
       return newVault;
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to add vault');
+      const error = err instanceof Error ? err : new Error(String(err));
       setError(error);
-      console.error('Failed to add vault:', error);
+      console.error('Failed to add vault:', err);
       return null;
     } finally {
       setIsLoading(false);

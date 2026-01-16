@@ -31,9 +31,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         const loadedSettings = await settingsService.loadSettings();
         setSettings(loadedSettings);
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Failed to load settings');
+        const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
-        console.error('Failed to load settings:', error);
+        console.error('Failed to load settings:', err);
       } finally {
         setIsLoading(false);
       }
@@ -52,9 +52,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         const updatedSettings = await settingsService.updateSetting(key, value, settings);
         setSettings(updatedSettings);
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Failed to update setting');
+        const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
-        console.error('Failed to update setting:', error);
+        console.error('Failed to update setting:', err);
         throw error;
       }
     },
