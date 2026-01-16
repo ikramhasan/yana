@@ -111,7 +111,9 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       setError(null);
       const newNode = await fileTreeService.createNewNote(parentPath);
-      // Backend watcher will likely trigger a refresh, but we can also manually select it
+      // Refresh immediately for instant UI feedback
+      await refresh();
+      // Select the newly created note
       await selectFile(newNode);
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to create new note');
@@ -120,7 +122,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [selectFile]);
+  }, [selectFile, refresh]);
 
   /**
    * Delete a file or directory at the specified path.
@@ -138,7 +140,8 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
         setFileContent(null);
       }
       
-      // Backend watcher will trigger a refresh
+      // Backend watcher will trigger a refresh, but we refresh manually for speed
+      await refresh();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to delete');
       setError(error);
@@ -146,7 +149,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedFile]);
+  }, [selectedFile, refresh]);
 
   /**
    * Duplicate a file at the specified path.
@@ -157,6 +160,8 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       setError(null);
       const newNode = await fileTreeService.duplicateFile(path);
+      // Refresh immediately for instant UI feedback
+      await refresh();
       // Select the newly created duplicate
       await selectFile(newNode);
     } catch (err) {
@@ -166,7 +171,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [selectFile]);
+  }, [selectFile, refresh]);
 
   /**
    * Rename a file or directory at the specified path.
@@ -189,7 +194,8 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
           }
       }
       
-      // Backend watcher will trigger a refresh
+      // Backend watcher will trigger a refresh, but we refresh manually for speed
+      await refresh();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to rename');
       setError(error);
@@ -197,7 +203,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedFile]);
+  }, [selectedFile, refresh]);
 
   // Load file tree when vault changes
   useEffect(() => {
