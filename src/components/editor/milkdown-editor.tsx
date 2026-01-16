@@ -114,8 +114,8 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
             }
 
             try {
-              // Save image to assets folder and get relative path
-              const relativePath = await fileTreeService.saveImageToAssets(currentFilePath, file);
+              // Save image to attachments folder and get relative path
+              const relativePath = await fileTreeService.saveImageToAttachments(currentFilePath, file);
               // Convert to asset:// URL for display
               const mdDir = getDirectory(currentFilePath);
               const absolutePath = `${mdDir}/${relativePath}`;

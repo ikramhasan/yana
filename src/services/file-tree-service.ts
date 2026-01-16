@@ -265,22 +265,22 @@ class FileTreeService {
   }
 
   /**
-   * Save an image to the assets folder next to a markdown file.
-   * Creates the assets folder if it doesn't exist.
+   * Save an image to the attachments folder next to a markdown file.
+   * Creates the attachments folder if it doesn't exist.
    * @param mdFilePath - Absolute path to the markdown file
    * @param imageFile - The image File object to save
-   * @returns Promise resolving to the relative path to the saved image (e.g., "assets/image.png")
+   * @returns Promise resolving to the relative path to the saved image (e.g., "attachments/image.png")
    * @throws Error if save fails
    */
-  async saveImageToAssets(mdFilePath: string, imageFile: File): Promise<string> {
+  async saveImageToAttachments(mdFilePath: string, imageFile: File): Promise<string> {
     try {
-      await info(`Saving image to assets for: ${mdFilePath}`);
+      await info(`Saving image to attachments for: ${mdFilePath}`);
 
       // Convert File to Uint8Array
       const arrayBuffer = await imageFile.arrayBuffer();
       const imageData = Array.from(new Uint8Array(arrayBuffer));
 
-      const relativePath = await invoke<string>('save_image_to_assets', {
+      const relativePath = await invoke<string>('save_image_to_attachments', {
         mdFilePath,
         imageName: imageFile.name,
         imageData,
@@ -290,7 +290,7 @@ class FileTreeService {
       return relativePath;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      await logError(`Failed to save image to assets: ${errorMessage}`);
+      await logError(`Failed to save image to attachments: ${errorMessage}`);
 
       await message(`Failed to save image:\n\n${errorMessage}`, {
         title: 'Image Save Error',

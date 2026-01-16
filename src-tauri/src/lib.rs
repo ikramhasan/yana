@@ -31,7 +31,7 @@ pub fn run() {
             commands::rename_path,
             commands::start_watching,
             commands::stop_watching,
-            commands::save_image_to_assets,
+            commands::save_image_to_attachments,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

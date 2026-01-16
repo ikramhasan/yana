@@ -512,12 +512,12 @@ pub async fn stop_watching(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
-/// Save an image to the assets folder next to a markdown file
-/// Creates the assets folder if it doesn't exist
+/// Save an image to the attachments folder next to a markdown file
+/// Creates the attachments folder if it doesn't exist
 /// If an identical file already exists, reuses it instead of creating a duplicate
-/// Returns the relative path to the saved image (e.g., "assets/image.png")
+/// Returns the relative path to the saved image (e.g., "attachments/image.png")
 #[tauri::command]
-pub async fn save_image_to_assets(
+pub async fn save_image_to_attachments(
     md_file_path: String,
     image_name: String,
     image_data: Vec<u8>,
@@ -533,25 +533,25 @@ pub async fn save_image_to_assets(
         error_msg
     })?;
 
-    // Create the assets folder path
-    let assets_dir = parent_dir.join("assets");
+    // Create the attachments folder path
+    let attachments_dir = parent_dir.join("attachments");
 
-    // Create the assets folder if it doesn't exist
-    if !assets_dir.exists() {
-        fs::create_dir(&assets_dir).map_err(|e| {
-            let error_msg = format!("Failed to create assets directory: {}", e);
+    // Create the attachments folder if it doesn't exist
+    if !attachments_dir.exists() {
+        fs::create_dir(&attachments_dir).map_err(|e| {
+            let error_msg = format!("Failed to create attachments directory: {}", e);
             log::error!("{}", error_msg);
             error_msg
         })?;
-        log::info!("Created assets directory: {}", assets_dir.display());
+        log::info!("Created attachments directory: {}", attachments_dir.display());
     }
 
     // Check if file with same name exists and has identical content
-    let initial_path = assets_dir.join(&image_name);
+    let initial_path = attachments_dir.join(&image_name);
     if initial_path.exists() {
         if let Ok(existing_data) = fs::read(&initial_path) {
             if existing_data == image_data {
-                let relative_path = format!("assets/{}", image_name);
+                let relative_path = format!("attachments/{}", image_name);
                 log::info!("Reusing existing identical image: {}", initial_path.display());
                 return Ok(relative_path);
             }
@@ -566,7 +566,7 @@ pub async fn save_image_to_assets(
     let mut counter = 1;
     loop {
         let numbered_name = format!("{}-{}.{}", stem, counter, extension);
-        let numbered_path = assets_dir.join(&numbered_name);
+        let numbered_path = attachments_dir.join(&numbered_name);
 
         if !numbered_path.exists() {
             break;
@@ -574,7 +574,7 @@ pub async fn save_image_to_assets(
 
         if let Ok(existing_data) = fs::read(&numbered_path) {
             if existing_data == image_data {
-                let relative_path = format!("assets/{}", numbered_name);
+                let relative_path = format!("attachments/{}", numbered_name);
                 log::info!("Reusing existing identical image: {}", numbered_path.display());
                 return Ok(relative_path);
             }
@@ -584,12 +584,12 @@ pub async fn save_image_to_assets(
 
     // No identical file found, create new file
     let mut final_name = image_name.clone();
-    let mut image_path = assets_dir.join(&final_name);
+    let mut image_path = attachments_dir.join(&final_name);
     let mut counter = 1;
 
     while image_path.exists() {
         final_name = format!("{}-{}.{}", stem, counter, extension);
-        image_path = assets_dir.join(&final_name);
+        image_path = attachments_dir.join(&final_name);
         counter += 1;
     }
 
@@ -600,7 +600,7 @@ pub async fn save_image_to_assets(
         error_msg
     })?;
 
-    let relative_path = format!("assets/{}", final_name);
+    let relative_path = format!("attachments/{}", final_name);
     log::info!("Successfully saved image to: {}", image_path.display());
 
     Ok(relative_path)
