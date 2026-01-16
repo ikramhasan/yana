@@ -2,6 +2,7 @@
 
 import { useVault } from "@/contexts/vault-context";
 import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import { WelcomeScreen } from "@/components/welcome-screen";
 
@@ -26,8 +27,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppSidebar />
-      <CommandMenu />
-      {children}
+      <SidebarInset className="overflow-hidden">
+        <CommandMenu />
+        {children}
+      </SidebarInset>
     </>
   );
 }
