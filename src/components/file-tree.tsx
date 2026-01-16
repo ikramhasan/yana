@@ -11,7 +11,19 @@ import {
   IconTrash,
   IconFileText,
   IconMarkdown,
+  IconPhoto,
 } from "@tabler/icons-react"
+
+// Image file extensions
+const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico'];
+
+/**
+ * Check if a file is an image based on its extension
+ */
+function isImageFile(filename: string): boolean {
+  const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+  return IMAGE_EXTENSIONS.includes(ext);
+}
 import {
   ContextMenu,
   ContextMenuContent,
@@ -292,11 +304,16 @@ function TreeNode({
     )
   }
 
+  const isImage = isImageFile(element.name);
+  const fileIcon = isImage
+    ? <IconPhoto className="size-4" />
+    : <IconMarkdown className="size-4" />;
+
   // When renaming, render input outside of File component to avoid button capturing keyboard events
   if (isRenaming) {
     return (
       <div className="flex items-center gap-1 px-1">
-        <IconMarkdown className="size-4 shrink-0" />
+        {isImage ? <IconPhoto className="size-4 shrink-0" /> : <IconMarkdown className="size-4 shrink-0" />}
         <input
           ref={inputRef}
           type="text"
@@ -318,7 +335,7 @@ function TreeNode({
           <File
             value={element.id}
             isSelect={selectedId === element.id}
-            fileIcon={<IconMarkdown className="size-4" />}
+            fileIcon={fileIcon}
             onClick={handleSelect}
           >
             <span>{element.name}</span>

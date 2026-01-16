@@ -240,7 +240,7 @@ const Folder = forwardRef<
       >
         <AccordionPrimitive.Trigger
           className={cn(
-            `flex items-center gap-1 rounded-md text-sm`,
+            `flex w-full items-center gap-1 rounded-md text-sm`,
             className,
             {
               "bg-foreground text-background rounded-md": isSelect && isSelectable,
@@ -251,10 +251,12 @@ const Folder = forwardRef<
           disabled={!isSelectable}
           onClick={() => handleExpand(value)}
         >
-          {expandedItems?.includes(value)
-            ? (openIcon ?? <FolderOpenIcon className="size-4" />)
-            : (closeIcon ?? <FolderIcon className="size-4" />)}
-          <span>{element}</span>
+          <span className="shrink-0">
+            {expandedItems?.includes(value)
+              ? (openIcon ?? <FolderOpenIcon className="size-4" />)
+              : (closeIcon ?? <FolderIcon className="size-4" />)}
+          </span>
+          <span className="truncate">{element}</span>
         </AccordionPrimitive.Trigger>
         <AccordionPrimitive.Content className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down relative h-full overflow-hidden text-sm">
           {element && indicator && <TreeIndicator aria-hidden="true" />}
@@ -309,7 +311,7 @@ const File = forwardRef<
         type="button"
         disabled={!isSelectable}
         className={cn(
-          "flex w-fit items-center gap-1 rounded-md pr-1 text-sm duration-200 ease-in-out rtl:pr-0 rtl:pl-1",
+          "flex w-full items-center gap-1 rounded-md pr-1 text-sm duration-200 ease-in-out rtl:pr-0 rtl:pl-1",
           {
             "bg-foreground text-background": isSelected && isSelectable,
           },
@@ -320,8 +322,8 @@ const File = forwardRef<
         onClick={() => selectItem(value)}
         {...props}
       >
-        {fileIcon ?? <FileIcon className="size-4" />}
-        {children}
+        <span className="shrink-0">{fileIcon ?? <FileIcon className="size-4" />}</span>
+        <span className="truncate">{children}</span>
       </button>
     )
   }

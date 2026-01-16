@@ -3,6 +3,16 @@
 import { MilkdownEditor } from "@/components/editor/milkdown-editor";
 import { useFileTree } from "@/contexts/file-tree-context";
 import { useState } from "react";
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+
+// Image file extensions
+const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico'];
+
+function isImageFile(filename: string): boolean {
+  const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+  return IMAGE_EXTENSIONS.includes(ext);
+}
 
 let index = 0
 
@@ -124,13 +134,32 @@ You can use three or more hyphens, asterisks, or underscores to create a horizon
 ***
 `;
 
-import { Button } from "@/components/ui/button";
-
 export default function Page() {
-  const [editorType, setEditorType] = useState<'milkdown' | 'plate'>('milkdown');
   const { fileContent, selectedFile } = useFileTree();
 
   console.log("Page rendered", index++);
+
+  // Check if selected file is an image
+  const isImage = selectedFile && isImageFile(selectedFile.name);
+
+  // Render image viewer for image files
+  if (isImage && selectedFile) {
+    const imageSrc = convertFileSrc(selectedFile.path);
+    return (
+      <div className="relative h-full w-full overflow-hidden">
+        <div className="absolute top-2 left-2 z-50">
+          <SidebarTrigger className="pt-1" />
+        </div>
+        <div className="flex h-full w-full items-center justify-center overflow-auto p-8">
+          <img
+            src={imageSrc}
+            alt={selectedFile.name}
+            className="max-h-full max-w-full object-contain"
+          />
+        </div>
+      </div>
+    );
+  }
 
   const markdown = fileContent ?? EXAMPLE_MARKDOWN;
 

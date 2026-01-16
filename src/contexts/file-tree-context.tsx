@@ -5,6 +5,17 @@ import type { FileNode, FileTreeContextValue, FileEvent } from '@/types/file-tre
 import { fileTreeService } from '@/services/file-tree-service';
 import { useVault } from './vault-context';
 
+// Image file extensions
+const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico'];
+
+/**
+ * Check if a file is an image based on its extension
+ */
+function isImageFile(filename: string): boolean {
+  const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+  return IMAGE_EXTENSIONS.includes(ext);
+}
+
 /**
  * React context for file tree state management.
  * Provides file tree data and operations to the component tree.
@@ -68,6 +79,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
   /**
    * Select a file and load its content.
    * Updates selectedFile and fileContent state.
+   * For image files, sets content to null (they're displayed differently).
    * Handles file read errors gracefully with user feedback.
    */
   const selectFile = useCallback(async (node: FileNode) => {
@@ -83,6 +95,13 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     // Validate file path
     if (!node.path || node.path.trim() === '') {
       setError(new Error('Invalid file path'));
+      return;
+    }
+
+    // For image files, just select without reading content
+    if (isImageFile(node.name)) {
+      setSelectedFile(node);
+      setFileContent(null);
       return;
     }
 
