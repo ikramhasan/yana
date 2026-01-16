@@ -36,6 +36,12 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
   
   const { currentVault } = useVault();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const selectedFileRef = useRef<FileNode | null>(null);
+
+  // Keep ref in sync for optimization checks without triggering re-renders
+  useEffect(() => {
+    selectedFileRef.current = selectedFile;
+  }, [selectedFile]);
 
   /**
    * Load file tree from the current vault path.
@@ -88,7 +94,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Skip if already selected
-    if (selectedFile?.id === node.id) {
+    if (selectedFileRef.current?.id === node.id) {
       return;
     }
 
@@ -119,7 +125,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedFile]);
+  }, []);
 
   /**
    * Create a new markdown note in the specified directory.

@@ -46,24 +46,46 @@ export function TabsProvider({ children }: { children: React.ReactNode }) {
   /**
    * Load tabs for the current vault.
    */
-  const loadTabs = useCallback(async (vaultId: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const vaultTabs = await tabsService.loadVaultTabs(vaultId);
-      setTabs(vaultTabs.tabs);
-      setActiveTabIdState(vaultTabs.activeTabId);
-    } catch (err) {
-      const error =
-        err instanceof Error ? err : new Error("Failed to load tabs");
-      setError(error);
-      console.error("Failed to load tabs:", error);
-      setTabs([]);
-      setActiveTabIdState(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const loadTabs = useCallback(
+    async (vaultId: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const vaultTabs = await tabsService.loadVaultTabs(vaultId);
+        setTabs(vaultTabs.tabs);
+        setActiveTabIdState(vaultTabs.activeTabId);
+
+        // Sync with file tree on initial load
+        if (vaultTabs.activeTabId) {
+          const activeTab = vaultTabs.tabs.find(
+            (t) => t.id === vaultTabs.activeTabId
+          );
+          if (activeTab) {
+            isSyncingRef.current = true;
+            selectFile({
+              id: activeTab.id,
+              name: activeTab.name,
+              path: activeTab.path,
+              type: "file",
+            });
+            setTimeout(() => {
+              isSyncingRef.current = false;
+            }, 100);
+          }
+        }
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error("Failed to load tabs");
+        setError(error);
+        console.error("Failed to load tabs:", error);
+        setTabs([]);
+        setActiveTabIdState(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [selectFile]
+  );
 
   /**
    * Save current tabs to storage.
