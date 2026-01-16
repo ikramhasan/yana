@@ -215,10 +215,10 @@ export function TabsProvider({ children }: { children: React.ReactNode }) {
 
   // Load tabs when vault changes
   useEffect(() => {
-    // Save tabs for previous vault before switching
-    if (prevVaultIdRef.current && prevVaultIdRef.current !== currentVault?.id) {
-      saveTabs(prevVaultIdRef.current, tabs, activeTabId);
-    }
+    // // Save tabs for previous vault before switching
+    // if (prevVaultIdRef.current && prevVaultIdRef.current !== currentVault?.id) {
+    //   saveTabs(prevVaultIdRef.current, tabs, activeTabId);
+    // }
 
     if (!currentVault?.id) {
       setTabs([]);
@@ -227,66 +227,66 @@ export function TabsProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    prevVaultIdRef.current = currentVault.id;
-    loadTabs(currentVault.id);
-  }, [currentVault?.id, loadTabs, saveTabs]);
+    // prevVaultIdRef.current = currentVault.id;
+    // loadTabs(currentVault.id);
+  }, [currentVault?.id]);
 
   // Save tabs when they change (debounced)
-  useEffect(() => {
-    if (!currentVault?.id || isLoading) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      saveTabs(currentVault.id, tabs, activeTabId);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [tabs, activeTabId, currentVault?.id, isLoading, saveTabs]);
+  // useEffect(() => {
+  //   if (!currentVault?.id || isLoading) {
+  //     return;
+  //   }
+  //
+  //   const timer = setTimeout(() => {
+  //     saveTabs(currentVault.id, tabs, activeTabId);
+  //   }, 500);
+  //
+  //   return () => clearTimeout(timer);
+  // }, [tabs, activeTabId, currentVault?.id, isLoading, saveTabs]);
 
   // Use a ref to track tabs for effects without causing re-runs
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
 
-  // Sync: When a file is selected in the tree, open it as a tab
-  useEffect(() => {
-    // Skip if no file selected, already syncing, or file is already active tab
-    if (!selectedFile || !selectedFile.id || isSyncingRef.current) {
-      return;
-    }
-
-    if (selectedFile.id === activeTabId) {
-      return;
-    }
-
-    // Set syncing flag to prevent loops
-    isSyncingRef.current = true;
-
-    const currentTabs = tabsRef.current;
-    const existingTab = currentTabs.find((t) => t.id === selectedFile.id);
-
-    if (existingTab) {
-      // Update timestamp and activate
-      const updatedTabs = tabsService.touchTab(currentTabs, selectedFile.id);
-      setTabs(updatedTabs);
-    } else {
-      // Create new tab
-      const newTab = tabsService.createTabFromFile(selectedFile);
-      let updatedTabs = [...currentTabs, newTab];
-      updatedTabs = tabsService.enforceMaxTabs(
-        updatedTabs,
-        settings.maxTabs,
-        selectedFile.id
-      );
-      setTabs(updatedTabs);
-    }
-    setActiveTabIdState(selectedFile.id);
-
-    // Reset syncing flag
-    setTimeout(() => {
-      isSyncingRef.current = false;
-    }, 100);
-  }, [selectedFile?.id, activeTabId, settings.maxTabs]);
+  // Sync: When a file is selected in the tree, open it as a tab (DISABLED)
+  // useEffect(() => {
+  //   // Skip if no file selected, already syncing, or file is already active tab
+  //   if (!selectedFile || !selectedFile.id || isSyncingRef.current) {
+  //     return;
+  //   }
+  //
+  //   if (selectedFile.id === activeTabId) {
+  //     return;
+  //   }
+  //
+  //   // Set syncing flag to prevent loops
+  //   isSyncingRef.current = true;
+  //
+  //   const currentTabs = tabsRef.current;
+  //   const existingTab = currentTabs.find((t) => t.id === selectedFile.id);
+  //
+  //   if (existingTab) {
+  //     // Update timestamp and activate
+  //     const updatedTabs = tabsService.touchTab(currentTabs, selectedFile.id);
+  //     setTabs(updatedTabs);
+  //   } else {
+  //     // Create new tab
+  //     const newTab = tabsService.createTabFromFile(selectedFile);
+  //     let updatedTabs = [...currentTabs, newTab];
+  //     updatedTabs = tabsService.enforceMaxTabs(
+  //       updatedTabs,
+  //       settings.maxTabs,
+  //       selectedFile.id
+  //     );
+  //     setTabs(updatedTabs);
+  //   }
+  //   setActiveTabIdState(selectedFile.id);
+  //
+  //   // Reset syncing flag
+  //   setTimeout(() => {
+  //     isSyncingRef.current = false;
+  //   }, 100);
+  // }, [selectedFile?.id, activeTabId, settings.maxTabs]);
 
   const value: TabsContextValue = {
     tabs,

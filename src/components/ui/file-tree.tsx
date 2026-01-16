@@ -69,6 +69,8 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
       openIcon,
       closeIcon,
       dir,
+      expandedItems: _expandedItems,
+      onExpandedItemsChange,
       ...props
     },
     ref
@@ -80,18 +82,18 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
       initialExpandedItems
     )
 
-    const expandedItems = props.expandedItems ?? internalExpandedItems
+    const expandedItems = _expandedItems ?? internalExpandedItems
     const setExpandedItems = useCallback((value: React.SetStateAction<string[] | undefined>) => {
       const newValue = typeof value === "function" 
         ? (value as (prev: string[] | undefined) => string[] | undefined)(expandedItems) 
         : value;
       
-      if (props.onExpandedItemsChange) {
-        props.onExpandedItemsChange(newValue ?? [])
+      if (onExpandedItemsChange) {
+        onExpandedItemsChange(newValue ?? [])
       } else {
         setInternalExpandedItems(newValue)
       }
-    }, [expandedItems, props.onExpandedItemsChange])
+    }, [expandedItems, onExpandedItemsChange])
 
     const selectItem = useCallback((id: string) => {
       setSelectedId(id)
@@ -231,6 +233,7 @@ const Folder = forwardRef<
       isSelectable = true,
       isSelect,
       children,
+      expandedItems: _folderExpandedItems,
       ...props
     },
     ref
@@ -297,7 +300,7 @@ const File = forwardRef<
     {
       value,
       className,
-      handleSelect,
+      handleSelect: _handleSelect,
       isSelectable = true,
       isSelect,
       fileIcon,
