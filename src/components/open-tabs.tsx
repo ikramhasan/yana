@@ -33,7 +33,7 @@ export function OpenTabs() {
             <SidebarMenuButton
               isActive={tab.id === activeTabId}
               onClick={() => setActiveTab(tab.id)}
-              className="pr-8"
+              className="pr-8 text-sm"
               tooltip={tab.path}
             >
               <IconMarkdown className="size-4 shrink-0" />
