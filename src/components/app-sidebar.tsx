@@ -24,7 +24,7 @@ import {
   
   export function AppSidebar() {
     const { currentVault } = useVault();
-    const { createNewNote } = useFileTree();
+    const { createNewNote, createNewFolder } = useFileTree();
 
     const handleNewNote = () => {
       if (currentVault?.path) {
@@ -32,30 +32,36 @@ import {
       }
     };
 
+    const handleNewFolder = () => {
+      if (currentVault?.path) {
+        createNewFolder(currentVault.path);
+      }
+    };
+
     return (
       <Sidebar>
-        <SidebarHeader data-tauri-drag-region>
-          <VaultSwitcher />
-          <SearchBar />
-        </SidebarHeader>
-        <SidebarContent>
-          <ContextMenu>
-            <ContextMenuTrigger className="flex min-h-full w-full flex-col">
+        <ContextMenu>
+          <ContextMenuTrigger className="flex flex-col min-h-full">
+            <SidebarHeader data-tauri-drag-region>
+              <VaultSwitcher />
+              <SearchBar />
+            </SidebarHeader>
+            <SidebarContent>
               <FileTree />
               <div className="flex-1" />
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuItem onClick={handleNewNote}>
-                <IconFilePlus className="mr-2 size-4" />
-                New note
-              </ContextMenuItem>
-              <ContextMenuItem>
-                <IconFolderPlus className="mr-2 size-4" />
-                New folder
-              </ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
-        </SidebarContent>
+            </SidebarContent>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem onClick={handleNewNote}>
+              <IconFilePlus className="mr-2 size-4" />
+              New note
+            </ContextMenuItem>
+            <ContextMenuItem onClick={handleNewFolder}>
+              <IconFolderPlus className="mr-2 size-4" />
+              New folder
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
         <SidebarFooter>
           <SidebarMenuItem>
             <SettingsDialog>

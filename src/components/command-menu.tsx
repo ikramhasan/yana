@@ -6,10 +6,13 @@ import {
   IconFileText,
   IconSun,
   IconMoon,
+  IconFolderPlus,
   IconLayoutSidebar,
   IconKeyboard,
 } from "@tabler/icons-react";
-import { useTheme } from "next-themes"
+import { useTheme } from "next-themes";
+import { useVault } from "@/contexts/vault-context";
+import { useFileTree } from "@/contexts/file-tree-context";
 
 import {
   CommandDialog,
@@ -33,8 +36,13 @@ export function CommandMenu() {
   const [shortcutsOpen, setShortcutsOpen] = React.useState(false);
   const { toggleSidebar } = useSidebar();
   const { theme, setTheme } = useTheme();
+  const { currentVault } = useVault();
+  const { createNewNote, createNewFolder } = useFileTree();
 
   React.useEffect(() => {
+    const handleOpenOpen = () => setOpen(true);
+    window.addEventListener("open-command-menu", handleOpenOpen);
+
     const shortcuts: KeyboardShortcut[] = [
       {
         id: "toggle-command-menu",
@@ -45,19 +53,14 @@ export function CommandMenu() {
           setOpen((open) => !open);
         },
       },
-      {
-        id: "toogle-sidebar",
-        key: "s",
-        metaOrCtrl: true,
-        description: "Toggle sidebar",
-        action: () => {
-          toggleSidebar();
-        },
-      },
     ];
 
-    return registerKeyboardShortcuts(shortcuts);
-  }, [toggleSidebar]);
+    const cleanup = registerKeyboardShortcuts(shortcuts);
+    return () => {
+      cleanup();
+      window.removeEventListener("open-command-menu", handleOpenOpen);
+    };
+  }, []);
 
   const runCommand = React.useCallback((command: () => unknown) => {
     setOpen(false);
@@ -74,19 +77,23 @@ export function CommandMenu() {
           <CommandGroup heading="Suggestions">
             <CommandItem
               onSelect={() => {
-                runCommand(() => console.log("New Note"));
+                runCommand(() => {
+                  if (currentVault?.path) createNewNote(currentVault.path);
+                });
               }}
             >
-              <IconFileText className="mr-2 size-4" />
+              <IconFilePlus className="mr-2 size-4" />
               <span>New Note</span>
             </CommandItem>
             <CommandItem
               onSelect={() => {
-                runCommand(() => console.log("New File"));
+                runCommand(() => {
+                  if (currentVault?.path) createNewFolder(currentVault.path);
+                });
               }}
             >
-              <IconFilePlus className="mr-2 size-4" />
-              <span>New File</span>
+              <IconFolderPlus className="mr-2 size-4" />
+              <span>New Folder</span>
             </CommandItem>
           </CommandGroup>
           <CommandSeparator />
