@@ -51,6 +51,8 @@ type TreeViewProps = {
   indicator?: boolean
   elements?: TreeViewElement[]
   initialExpandedItems?: string[]
+  expandedItems?: string[]
+  onExpandedItemsChange?: (items: string[]) => void
   openIcon?: React.ReactNode
   closeIcon?: React.ReactNode
 } & React.HTMLAttributes<HTMLDivElement>
@@ -74,9 +76,22 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
     const [selectedId, setSelectedId] = useState<string | undefined>(
       initialSelectedId
     )
-    const [expandedItems, setExpandedItems] = useState<string[] | undefined>(
+    const [internalExpandedItems, setInternalExpandedItems] = useState<string[] | undefined>(
       initialExpandedItems
     )
+
+    const expandedItems = props.expandedItems ?? internalExpandedItems
+    const setExpandedItems = useCallback((value: React.SetStateAction<string[] | undefined>) => {
+      const newValue = typeof value === "function" 
+        ? (value as (prev: string[] | undefined) => string[] | undefined)(expandedItems) 
+        : value;
+      
+      if (props.onExpandedItemsChange) {
+        props.onExpandedItemsChange(newValue ?? [])
+      } else {
+        setInternalExpandedItems(newValue)
+      }
+    }, [expandedItems, props.onExpandedItemsChange])
 
     const selectItem = useCallback((id: string) => {
       setSelectedId(id)
@@ -89,7 +104,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
         }
         return [...(prev ?? []), id]
       })
-    }, [])
+    }, [setExpandedItems])
 
     const expandSpecificTargetedElements = useCallback(
       (elements?: TreeViewElement[], selectId?: string) => {
@@ -125,7 +140,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
           findParent(element)
         })
       },
-      []
+      [setExpandedItems]
     )
 
     useEffect(() => {
@@ -162,9 +177,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
               defaultValue={expandedItems}
               value={expandedItems}
               className="flex flex-col gap-1"
-              onValueChange={(value) =>
-                setExpandedItems((prev) => [...(prev ?? []), value[0]])
-              }
+              onValueChange={setExpandedItems}
               dir={dir as Direction}
             >
               {children}
@@ -249,7 +262,6 @@ const Folder = forwardRef<
             }
           )}
           disabled={!isSelectable}
-          onClick={() => handleExpand(value)}
         >
           <span className="shrink-0">
             {expandedItems?.includes(value)
@@ -260,18 +272,9 @@ const Folder = forwardRef<
         </AccordionPrimitive.Trigger>
         <AccordionPrimitive.Content className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down relative h-full overflow-hidden text-sm">
           {element && indicator && <TreeIndicator aria-hidden="true" />}
-          <AccordionPrimitive.Root
-            dir={direction}
-            type="multiple"
-            className="ml-5 flex flex-col gap-1 py-1 rtl:mr-5"
-            defaultValue={expandedItems}
-            value={expandedItems}
-            onValueChange={(value) => {
-              setExpandedItems?.((prev) => [...(prev ?? []), value[0]])
-            }}
-          >
+          <div className="ml-5 flex flex-col gap-1 py-1 rtl:mr-5">
             {children}
-          </AccordionPrimitive.Root>
+          </div>
         </AccordionPrimitive.Content>
       </AccordionPrimitive.Item>
     )
@@ -341,16 +344,18 @@ const CollapseButton = forwardRef<
   const { expandedItems, setExpandedItems } = useTree()
 
   const expendAllTree = useCallback((elements: TreeViewElement[]) => {
-    const expandTree = (element: TreeViewElement) => {
+    const expandIds: string[] = []
+    const collectExpandableIds = (element: TreeViewElement) => {
       const isSelectable = element.isSelectable ?? true
       if (isSelectable && element.children && element.children.length > 0) {
-        setExpandedItems?.((prev) => [...(prev ?? []), element.id])
-        element.children.forEach(expandTree)
+        expandIds.push(element.id)
+        element.children.forEach(collectExpandableIds)
       }
     }
 
-    elements.forEach(expandTree)
-  }, [])
+    elements.forEach(collectExpandableIds)
+    setExpandedItems?.(expandIds)
+  }, [setExpandedItems])
 
   const closeAll = useCallback(() => {
     setExpandedItems?.([])

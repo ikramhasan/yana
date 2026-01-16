@@ -71,76 +71,78 @@ function createNodeMap(nodes: FileNode[]): Map<string, FileNode> {
 }
 
 export function FileTree() {
-  const { nodes, selectedFile, isLoading, error, selectFile, createNewNote, createNewFolder, deleteNode, duplicateFile, renameNode } = useFileTree()
+  const { 
+    nodes, 
+    selectedFile, 
+    isLoading, 
+    error, 
+    selectFile, 
+    createNewNote, 
+    createNewFolder, 
+    deleteNode, 
+    duplicateFile, 
+    renameNode,
+    expandedIds,
+    setExpandedIds
+  } = useFileTree()
   const { currentVault } = useVault()
 
   const treeElements = React.useMemo(() => convertToTreeElements(nodes), [nodes])
   const nodeMap = React.useMemo(() => createNodeMap(nodes), [nodes])
 
-  // Show loading state
-  if (isLoading && nodes.length === 0) {
-    return (
-      <SidebarGroup className="p-0">
-        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-        <SidebarMenu className="gap-0">
-          <div className="px-4 py-2 text-sm text-muted-foreground">
-            Loading...
-          </div>
-        </SidebarMenu>
-      </SidebarGroup>
-    )
-  }
-
-  // Show empty state
-  if (nodes.length === 0) {
-    return (
-      <SidebarGroup className="p-0">
-        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-        <SidebarMenu className="gap-0">
-          <div className="px-4 py-2 text-sm text-muted-foreground">
-            No files found
-          </div>
-        </SidebarMenu>
-      </SidebarGroup>
-    )
-  }
-
   return (
-    <SidebarGroup className="p-0">
+    <SidebarGroup className="p-0 flex flex-col h-full">
       <SidebarGroupLabel>Workspace</SidebarGroupLabel>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div className="flex-1 min-h-[200px]">
-            <Tree
-              className="px-0"
-              indicator={true}
-              initialSelectedId={selectedFile?.id}
-              openIcon={<IconFolderOpen className="size-4" />}
-              closeIcon={<IconFolder className="size-4" />}
-            >
-              {treeElements.map((element) => (
-                <TreeNode
-                  key={element.id}
-                  element={element}
-                  nodeMap={nodeMap}
-                  selectedId={selectedFile?.id ?? undefined}
-                  onSelect={selectFile}
-                  onCreateNote={createNewNote}
-                  onCreateFolder={createNewFolder}
-                  onDelete={deleteNode}
-                  onDuplicate={duplicateFile}
-                  onRename={renameNode}
-                />
-              ))}
-            </Tree>
+          <div className="flex-1 min-h-[100px]">
+            {isLoading && nodes.length === 0 ? (
+              <SidebarMenu className="gap-0">
+                <div className="px-4 py-2 text-sm text-muted-foreground">
+                  Loading...
+                </div>
+              </SidebarMenu>
+            ) : nodes.length === 0 ? (
+              <SidebarMenu className="gap-0">
+                <div className="px-4 py-2 text-sm text-muted-foreground">
+                  No files found
+                </div>
+              </SidebarMenu>
+            ) : (
+              <Tree
+                className="px-0"
+                indicator={true}
+                elements={treeElements}
+                initialSelectedId={selectedFile?.id}
+                expandedItems={expandedIds}
+                onExpandedItemsChange={setExpandedIds}
+                openIcon={<IconFolderOpen className="size-4" />}
+                closeIcon={<IconFolder className="size-4" />}
+              >
+                {treeElements.map((element) => (
+                  <TreeNode
+                    key={element.id}
+                    element={element}
+                    nodeMap={nodeMap}
+                    selectedId={selectedFile?.id ?? undefined}
+                    onSelect={selectFile}
+                    onCreateNote={createNewNote}
+                    onCreateFolder={createNewFolder}
+                    onDelete={deleteNode}
+                    onDuplicate={duplicateFile}
+                    onRename={renameNode}
+                  />
+                ))}
+              </Tree>
+            )}
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem onClick={() => currentVault?.path && createNewNote(currentVault.path)}>
+          <ContextMenuItem onSelect={() => currentVault?.path && createNewNote(currentVault.path)}>
             <IconFilePlus className="mr-2 size-4" />
             New note
           </ContextMenuItem>
-          <ContextMenuItem onClick={() => currentVault?.path && createNewFolder(currentVault.path)}>
+          <ContextMenuItem onSelect={() => currentVault?.path && createNewFolder(currentVault.path)}>
             <IconFolderPlus className="mr-2 size-4" />
             New folder
           </ContextMenuItem>
@@ -178,6 +180,16 @@ function TreeNode({
   const [isRenaming, setIsRenaming] = React.useState(false)
   const [newName, setNewName] = React.useState(element.name)
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const { renamingId, setRenamingId } = useFileTree()
+
+  React.useEffect(() => {
+    if (renamingId === element.id) {
+      setIsRenaming(true)
+      setNewName(element.name)
+      setRenamingId(null)
+      setTimeout(() => inputRef.current?.focus(), 0)
+    }
+  }, [renamingId, element.id, setRenamingId, element.name])
 
   if (!node) return null
 

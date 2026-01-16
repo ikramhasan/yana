@@ -33,6 +33,8 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [expandedIds, setExpandedIds] = useState<string[]>([]);
   
   const { currentVault } = useVault();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -81,6 +83,81 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       await loadFileTree(currentVault.path);
     }
   }, [currentVault?.path, loadFileTree]);
+
+  /**
+   * Get all parent folder nodes for a given path
+   */
+  const getParentNodes = useCallback((nodes: FileNode[], targetPath: string): FileNode[] => {
+    const parents: FileNode[] = [];
+    let currentPath = targetPath;
+    
+    const findInTree = (currentNodes: FileNode[], path: string): FileNode | null => {
+        for (const node of currentNodes) {
+            if (node.path === path) return node;
+            if (node.children) {
+                const found = findInTree(node.children, path);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+
+    while (currentPath.includes('/')) {
+        currentPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+        if (!currentPath) break;
+        
+        const parentNode = findInTree(nodes, currentPath);
+        if (parentNode) {
+            parents.push(parentNode);
+        }
+    }
+    return parents;
+  }, []);
+
+  /**
+   * Expand all parents of a new node
+   */
+  const expandToNode = useCallback((allNodes: FileNode[], path: string) => {
+    const parents = getParentNodes(allNodes, path);
+    const parentIds = parents.map(p => p.id);
+    setExpandedIds(prev => {
+        const next = [...prev];
+        parentIds.forEach(id => {
+            if (!next.includes(id)) next.push(id);
+        });
+        return next;
+    });
+  }, [getParentNodes]);
+
+  // Auto-expand to renaming node when it appears in the tree
+  useEffect(() => {
+    if (renamingId && nodes.length > 0) {
+      const findPath = (currentNodes: FileNode[]): string | null => {
+        for (const node of currentNodes) {
+          if (node.id === renamingId) return node.path;
+          if (node.children) {
+            const found = findPath(node.children);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      const path = findPath(nodes);
+      if (path) {
+        expandToNode(nodes, path);
+      }
+    }
+  }, [renamingId, nodes, expandToNode]);
+
+  /**
+   * Toggle expansion of a folder
+   */
+  const toggleExpand = useCallback((id: string) => {
+    setExpandedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  }, []);
 
   /**
    * Select a file and load its content.
@@ -136,8 +213,12 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       setError(null);
       const newNode = await fileTreeService.createNewNote(parentPath);
-      // Refresh immediately for instant UI feedback
+      // Set as renaming
+      setRenamingId(newNode.id);
+      
+      // Refresh to get updated tree
       await refresh();
+      
       // Select the newly created note
       await selectFile(newNode);
     } catch (err) {
@@ -156,8 +237,10 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
-      await fileTreeService.createNewFolder(parentPath);
-      // Backend watcher will trigger a refresh, but we refresh manually for speed
+      const newNode = await fileTreeService.createNewFolder(parentPath);
+      // Set as renaming
+      setRenamingId(newNode.id);
+      // Refresh to get updated tree
       await refresh();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to create new folder');
@@ -339,6 +422,11 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     deleteNode,
     duplicateFile,
     renameNode,
+    renamingId,
+    setRenamingId,
+    expandedIds,
+    toggleExpand,
+    setExpandedIds,
     refresh,
   };
 

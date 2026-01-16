@@ -56,6 +56,16 @@ export interface FileTreeContextValue {
   duplicateFile: (path: string) => Promise<void>;
   /** Rename a file or directory at the specified path */
   renameNode: (path: string, newPath: string) => Promise<void>;
+  /** ID of the node that should be in rename mode */
+  renamingId: string | null;
+  /** Set the ID of the node that should be in rename mode */
+  setRenamingId: (id: string | null) => void;
+  /** IDs of the folders that are expanded */
+  expandedIds: string[];
+  /** Toggle expansion of a folder */
+  toggleExpand: (id: string) => void;
+  /** Set expanded IDs directly */
+  setExpandedIds: (ids: string[]) => void;
   /** Refresh the file tree from the filesystem */
   refresh: () => Promise<void>;
 }
