@@ -471,3 +471,29 @@
     animation: none;
     mix-blend-mode: normal;
 }
+
+/* Ensure dialogs stay on top and maintain blur during theme transitions */
+[data-slot="dialog-overlay"][data-state="open"] {
+  view-transition-name: dialog-overlay;
+}
+
+[data-slot="dialog-content"][data-state="open"] {
+  view-transition-name: dialog-content;
+}
+
+::view-transition-group(dialog-overlay) {
+  z-index: 10000;
+  backdrop-filter: blur(2px); /* Replicates the backdrop-blur when snapshotting fails */
+}
+
+::view-transition-group(dialog-content) {
+  z-index: 10001;
+}
+
+/* Optional: smooth out the crossfade for dialog elements */
+::view-transition-old(dialog-overlay),
+::view-transition-new(dialog-overlay),
+::view-transition-old(dialog-content),
+::view-transition-new(dialog-content) {
+  animation-duration: 400ms;
+}
