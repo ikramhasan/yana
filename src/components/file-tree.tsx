@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/sidebar"
 import { Tree, Folder, File, type TreeViewElement } from "@/components/ui/file-tree"
 import { useFileTree } from "@/contexts/file-tree-context"
-import { useTabs } from "@/contexts/tabs-context"
 import type { FileNode } from "@/types/file-tree"
 import { ask } from "@tauri-apps/plugin-dialog"
 
@@ -60,16 +59,9 @@ function createNodeMap(nodes: FileNode[]): Map<string, FileNode> {
 
 export function FileTree() {
   const { nodes, selectedFile, isLoading, error, selectFile, createNewNote, deleteNode, duplicateFile, renameNode } = useFileTree()
-  const { openTab } = useTabs()
 
   const treeElements = React.useMemo(() => convertToTreeElements(nodes), [nodes])
   const nodeMap = React.useMemo(() => createNodeMap(nodes), [nodes])
-
-  // Wrapper that opens tab and selects file
-  const handleFileSelect = React.useCallback((node: FileNode) => {
-    openTab(node)
-    selectFile(node)
-  }, [openTab, selectFile])
 
   // Show loading state
   if (isLoading && nodes.length === 0) {
@@ -79,20 +71,6 @@ export function FileTree() {
         <SidebarMenu className="gap-0">
           <div className="px-4 py-2 text-sm text-muted-foreground">
             Loading...
-          </div>
-        </SidebarMenu>
-      </SidebarGroup>
-    )
-  }
-
-  // Show error state
-  if (error) {
-    return (
-      <SidebarGroup className="p-0">
-        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-        <SidebarMenu className="gap-0">
-          <div className="px-4 py-2 text-sm text-destructive">
-            Error: {error.message}
           </div>
         </SidebarMenu>
       </SidebarGroup>
@@ -129,7 +107,7 @@ export function FileTree() {
             element={element}
             nodeMap={nodeMap}
             selectedId={selectedFile?.id ?? undefined}
-            onSelect={handleFileSelect}
+            onSelect={selectFile}
             onCreateNote={createNewNote}
             onDelete={deleteNode}
             onDuplicate={duplicateFile}
@@ -217,6 +195,7 @@ function TreeNode({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    e.stopPropagation()
     if (e.key === "Enter") {
       handleRenameSubmit()
     } else if (e.key === "Escape") {
@@ -240,39 +219,41 @@ function TreeNode({
     }
   }
 
-  const renderName = () => {
-    if (isRenaming) {
-      return (
-        <input
-          ref={inputRef}
-          type="text"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onBlur={handleRenameSubmit}
-          onKeyDown={handleKeyDown}
-          className="bg-background border-none outline-none ring-1 ring-primary/50 rounded-sm px-1 w-full text-[13px] h-5 leading-none"
-          onClick={(e) => e.stopPropagation()}
-        />
-      )
-    }
-    return <span>{element.name}</span>
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewName(e.target.value)
   }
 
   if (isFolder) {
+    // When renaming folder, render input outside of Folder component
+    if (isRenaming) {
+      return (
+        <div>
+          <div className="flex items-center gap-1">
+            <IconFolder className="size-4 shrink-0" />
+            <input
+              ref={inputRef}
+              type="text"
+              autoFocus
+              value={newName}
+              onChange={handleInputChange}
+              onBlur={handleRenameSubmit}
+              onKeyDown={handleKeyDown}
+              className="bg-background border-none outline-none ring-1 ring-primary/50 rounded-sm px-1 w-full text-[13px] h-5 leading-none"
+            />
+          </div>
+        </div>
+      )
+    }
+
     return (
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div>
             <Folder
-              element={isRenaming ? "" : element.name}
+              element={element.name}
               value={element.id}
               isSelectable={true}
             >
-              {isRenaming && (
-                <div className="flex items-center gap-1 -mt-6 ml-5">
-                  {renderName()}
-                </div>
-              )}
               {element.children?.map((child) => (
                 <TreeNode
                   key={child.id}
@@ -311,6 +292,25 @@ function TreeNode({
     )
   }
 
+  // When renaming, render input outside of File component to avoid button capturing keyboard events
+  if (isRenaming) {
+    return (
+      <div className="flex items-center gap-1 px-1">
+        <IconMarkdown className="size-4 shrink-0" />
+        <input
+          ref={inputRef}
+          type="text"
+          autoFocus
+          value={newName}
+          onChange={handleInputChange}
+          onBlur={handleRenameSubmit}
+          onKeyDown={handleKeyDown}
+          className="bg-background border-none outline-none ring-1 ring-primary/50 rounded-sm px-1 w-full text-[13px] h-5 leading-none"
+        />
+      </div>
+    )
+  }
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -321,7 +321,7 @@ function TreeNode({
             fileIcon={<IconMarkdown className="size-4" />}
             onClick={handleSelect}
           >
-            {renderName()}
+            <span>{element.name}</span>
           </File>
         </div>
       </ContextMenuTrigger>

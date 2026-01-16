@@ -130,13 +130,26 @@ export function TabsProvider({ children }: { children: React.ReactNode }) {
           const sortedTabs = [...updatedTabs].sort(
             (a, b) => b.openedAt - a.openedAt
           );
-          setActiveTabIdState(sortedTabs[0].id);
+          const newActiveTab = sortedTabs[0];
+          setActiveTabIdState(newActiveTab.id);
+
+          // Sync with file tree
+          isSyncingRef.current = true;
+          selectFile({
+            id: newActiveTab.id,
+            name: newActiveTab.name,
+            path: newActiveTab.path,
+            type: "file",
+          });
+          setTimeout(() => {
+            isSyncingRef.current = false;
+          }, 100);
         } else {
           setActiveTabIdState(null);
         }
       }
     },
-    [tabs, activeTabId]
+    [tabs, activeTabId, selectFile]
   );
 
   /**
@@ -209,40 +222,49 @@ export function TabsProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer);
   }, [tabs, activeTabId, currentVault?.id, isLoading, saveTabs]);
 
-  // Sync: When active tab changes, select the file in file tree
+  // Use a ref to track tabs for effects without causing re-runs
+  const tabsRef = useRef(tabs);
+  tabsRef.current = tabs;
+
+  // Sync: When a file is selected in the tree, open it as a tab
   useEffect(() => {
-    if (!activeTabId || isSyncingRef.current) {
+    // Skip if no file selected, already syncing, or file is already active tab
+    if (!selectedFile || !selectedFile.id || isSyncingRef.current) {
       return;
     }
 
-    const activeTab = tabs.find((t) => t.id === activeTabId);
-    if (activeTab && selectedFile?.id !== activeTabId) {
-      isSyncingRef.current = true;
-      selectFile({
-        id: activeTab.id,
-        name: activeTab.name,
-        path: activeTab.path,
-        type: "file",
-      });
-      setTimeout(() => {
-        isSyncingRef.current = false;
-      }, 100);
+    if (selectedFile.id === activeTabId) {
+      return;
     }
-  }, [activeTabId, tabs, selectedFile?.id, selectFile]);
 
-  // Sync: When a file is deleted, remove its tab
-  useEffect(() => {
-    if (!selectedFile && activeTabId) {
-      // Selected file was cleared (possibly deleted)
-      // Check if the active tab's file still exists
-      const activeTab = tabs.find((t) => t.id === activeTabId);
-      if (activeTab) {
-        // We can't easily check if file exists, but if selectedFile is null
-        // and we had an active tab, the file might have been deleted
-        // The file tree context handles this, so we just keep our state
-      }
+    // Set syncing flag to prevent loops
+    isSyncingRef.current = true;
+
+    const currentTabs = tabsRef.current;
+    const existingTab = currentTabs.find((t) => t.id === selectedFile.id);
+
+    if (existingTab) {
+      // Update timestamp and activate
+      const updatedTabs = tabsService.touchTab(currentTabs, selectedFile.id);
+      setTabs(updatedTabs);
+    } else {
+      // Create new tab
+      const newTab = tabsService.createTabFromFile(selectedFile);
+      let updatedTabs = [...currentTabs, newTab];
+      updatedTabs = tabsService.enforceMaxTabs(
+        updatedTabs,
+        settings.maxTabs,
+        selectedFile.id
+      );
+      setTabs(updatedTabs);
     }
-  }, [selectedFile, activeTabId, tabs]);
+    setActiveTabIdState(selectedFile.id);
+
+    // Reset syncing flag
+    setTimeout(() => {
+      isSyncingRef.current = false;
+    }, 100);
+  }, [selectedFile?.id, activeTabId, settings.maxTabs]);
 
   const value: TabsContextValue = {
     tabs,
