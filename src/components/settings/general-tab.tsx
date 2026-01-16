@@ -57,10 +57,10 @@ export function GeneralTab() {
         </ToggleGroup>
       </div>
 
-      <Separator />
+      {/* <Separator /> */}
 
       {/* Editor Section */}
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         <div className="space-y-1">
           <h3 className="text-sm font-medium">Editor</h3>
           <p className="text-xs text-muted-foreground">
@@ -82,7 +82,7 @@ export function GeneralTab() {
             onCheckedChange={(checked) => updateSetting('hideEditorToolbar', checked)}
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

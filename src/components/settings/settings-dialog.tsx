@@ -33,10 +33,10 @@ export function SettingsDialog({
 
         <Tabs defaultValue="general" className="w-full">
           <TabsList variant="line" className="w-full justify-start border-b">
-            <TabsTrigger value="general" className="text-sm">
+            <TabsTrigger value="general" className="text-sm pb-4">
               General
             </TabsTrigger>
-            <TabsTrigger value="vaults" className="text-sm">
+            <TabsTrigger value="vaults" className="text-sm pb-4">
               Vaults
             </TabsTrigger>
           </TabsList>
