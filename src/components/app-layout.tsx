@@ -6,6 +6,8 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import { WelcomeScreen } from "@/components/welcome-screen";
 
+import { FloatingHeader } from "@/components/floating-header";
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { currentVault, isLoading } = useVault();
 
@@ -27,7 +29,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppSidebar />
-      <SidebarInset className="overflow-hidden">
+      <SidebarInset className="overflow-hidden relative pt-12">
+        <FloatingHeader />
         <CommandMenu />
         {children}
       </SidebarInset>

@@ -4,7 +4,7 @@ import { MilkdownEditor } from "@/components/editor/milkdown-editor";
 import { useFileTree } from "@/contexts/file-tree-context";
 import { useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+
 
 // Image file extensions
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico'];
@@ -21,9 +21,6 @@ export default function Page() {
   if (!selectedFile) {
     return (
       <div className="relative h-full w-full flex items-center justify-center">
-        <div className="absolute top-2 left-2 z-50">
-          <SidebarTrigger className="pt-1" />
-        </div>
         <div className="text-muted-foreground text-sm">
           Select a file to start editing
         </div>
@@ -39,9 +36,6 @@ export default function Page() {
     const imageSrc = convertFileSrc(selectedFile.path);
     return (
       <div className="relative h-full w-full overflow-hidden">
-        <div className="absolute top-2 left-2 z-50">
-          <SidebarTrigger className="pt-1" />
-        </div>
         <div className="flex h-full w-full items-center justify-center overflow-auto p-8">
           <img
             src={imageSrc}

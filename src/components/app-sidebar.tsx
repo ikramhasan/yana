@@ -34,7 +34,7 @@ import {
 
     return (
       <Sidebar>
-        <SidebarHeader>
+        <SidebarHeader data-tauri-drag-region>
           <VaultSwitcher />
           <SearchBar />
         </SidebarHeader>

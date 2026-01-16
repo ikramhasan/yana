@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { Crepe } from '@milkdown/crepe';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import { convertFileSrc } from '@tauri-apps/api/core';
-import { SidebarTrigger } from "@/components/ui/sidebar";
+
 import { fileTreeService } from "@/services/file-tree-service";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -157,9 +157,7 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
 export function MilkdownEditor(props: MilkdownEditorProps) {
   return (
     <div className="relative h-full w-full overflow-hidden">
-      <div className="absolute top-2 left-2 z-50">
-        <SidebarTrigger className="pt-1" />
-      </div>
+
       <div className="milkdown-container yana-milkdown h-full w-full overflow-y-auto scrollbar-hide">
         <MilkdownProvider>
           <MilkdownEditorInner {...props} />

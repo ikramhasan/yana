@@ -410,7 +410,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     };
   }, [currentVault?.path, loadFileTree]);
 
-  const value: FileTreeContextValue = {
+  const value: FileTreeContextValue = React.useMemo(() => ({
     nodes,
     selectedFile,
     fileContent,
@@ -428,7 +428,23 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     toggleExpand,
     setExpandedIds,
     refresh,
-  };
+  }), [
+    nodes,
+    selectedFile,
+    fileContent,
+    isLoading,
+    error,
+    selectFile,
+    createNewNote,
+    createNewFolder,
+    deleteNode,
+    duplicateFile,
+    renameNode,
+    renamingId,
+    expandedIds,
+    toggleExpand,
+    refresh
+  ]);
 
   return <FileTreeContext.Provider value={value}>{children}</FileTreeContext.Provider>;
 }
