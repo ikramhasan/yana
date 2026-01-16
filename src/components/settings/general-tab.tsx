@@ -62,10 +62,10 @@ export function GeneralTab() {
         </ToggleGroup>
       </div>
 
-      <Separator />
+      {/* <Separator /> */}
 
       {/* Tabs Section */}
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         <div className="space-y-1">
           <h3 className="text-sm font-medium">Tabs</h3>
           <p className="text-xs text-muted-foreground">
@@ -96,7 +96,7 @@ export function GeneralTab() {
             className="w-20"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* <Separator /> */}
 
