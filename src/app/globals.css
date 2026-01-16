@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
+@import "@milkdown/crepe/theme/common/style.css";
+@import "@milkdown/crepe/theme/frame.css";
+
 @plugin "tailwind-scrollbar-hide";
+@plugin "@tailwindcss/typography";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -130,5 +134,306 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .milkdown {
+    @apply outline-none;
+  }
+  
+  .milkdown .editor {
+    @apply outline-none min-h-[500px];
+  }
+
+  /* Milkdown Crepe Theme Overrides */
+  .yana-milkdown .milkdown {
+    font-family: var(--font-sans), monospace !important;
+    font-size: 1rem !important; /* text-base */
+    line-height: 1.5rem !important;
+    background-color: transparent !important;
+    
+    --crepe-font-title: var(--font-sans), monospace !important;
+    --crepe-font-default: var(--font-sans), monospace !important;
+    --crepe-font-code: var(--font-sans), monospace !important;
+
+    /* Force variables with !important to override the frame theme */
+    --crepe-color-background: var(--background) !important;
+    --crepe-color-on-background: var(--foreground) !important;
+    --crepe-color-surface: var(--secondary) !important;
+    --crepe-color-surface-low: var(--muted) !important;
+    --crepe-color-on-surface: var(--foreground) !important;
+    --crepe-color-on-surface-variant: var(--muted-foreground) !important;
+    --crepe-color-outline: var(--muted-foreground) !important;
+    --crepe-color-primary: var(--primary) !important;
+    --crepe-color-secondary: var(--secondary) !important;
+    --crepe-color-on-secondary: var(--secondary-foreground) !important;
+    --crepe-color-inverse: var(--foreground) !important;
+    --crepe-color-on-inverse: var(--background) !important;
+    --crepe-color-hover: var(--accent) !important;
+    --crepe-color-selected: var(--accent) !important;
+    --crepe-color-inline-code: var(--primary) !important;
+    --crepe-color-error: var(--destructive) !important;
+    --crepe-color-inline-area: #F4F4F5 !important;
+  }
+
+  /* Force font and transparency on internal elements, but exclude KaTeX */
+  .yana-milkdown .milkdown *:not(.katex *) {
+    font-family: inherit !important;
+  }
+
+  /* Ensure KaTeX uses its own math fonts */
+  .yana-milkdown .katex,
+  .yana-milkdown .katex * {
+    font-family: KaTeX_Main, 'Times New Roman', serif !important;
+  }
+
+  .yana-milkdown .milkdown .editor {
+    background-color: transparent !important;
+    padding: 2rem 16px !important; /* Reduced padding from 32px/64px */
+    box-shadow: none !important;
+    font-size: 1rem !important;
+    outline: none !important;
+    min-height: calc(100vh - 100px) !important;
+    word-spacing: -0.1em !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  /* Ensure the drop indicator is visible and doesn't block events */
+  .milkdown .crepe-drop-cursor {
+    background-color: var(--primary) !important;
+    opacity: 1 !important;
+    z-index: 100 !important;
+    pointer-events: none !important;
+    height: 4px !important; /* Force a height for horizontal dropline */
+  }
+
+  /* Support for dark mode overrides */
+  .dark .yana-milkdown .milkdown {
+    --crepe-color-background: var(--background) !important;
+    --crepe-color-on-background: var(--foreground) !important;
+    --crepe-color-surface: var(--secondary) !important;
+    --crepe-color-surface-low: var(--muted) !important;
+    --crepe-color-on-surface: var(--foreground) !important;
+    --crepe-color-on-surface-variant: var(--muted-foreground) !important;
+    --crepe-color-outline: var(--muted-foreground) !important;
+    --crepe-color-primary: var(--primary) !important;
+    --crepe-color-secondary: var(--secondary) !important;
+    --crepe-color-on-secondary: var(--secondary-foreground) !important;
+    --crepe-color-inverse: var(--foreground) !important;
+    --crepe-color-on-inverse: var(--background) !important;
+    --crepe-color-hover: var(--accent) !important;
+    --crepe-color-selected: var(--accent) !important;
+    --crepe-color-inline-area: #27272A !important;
+    --crepe-color-surface: #19191C !important;
+    
+    --crepe-shadow-1: 0px 1px 2px 0px rgba(255, 255, 255, 0.1), 0px 1px 3px 1px rgba(255, 255, 255, 0.05) !important;
+    --crepe-shadow-2: 0px 1px 2px 0px rgba(255, 255, 255, 0.1), 0px 2px 6px 2px rgba(255, 255, 255, 0.05) !important;
+  }
+
+  /* Code Block & Inline Code Fixes */
+  .yana-milkdown .milkdown .cm-editor {
+    background-color: var(--crepe-color-surface) !important;
+  }
+
+  /* Muted active line gutter for light mode */
+  .yana-milkdown .milkdown .cm-gutterElement.cm-activeLineGutter {
+    background-color: #F1F5F9 !important;
+  }
+
+  .dark .yana-milkdown .milkdown .cm-gutterElement.cm-activeLineGutter {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  /* Remove rounded corners from code block language selector */
+  .milkdown .milkdown-code-block .tools .language-button,
+  .milkdown .milkdown-code-block .tools .language-button:hover,
+  .milkdown .milkdown-code-block .list-wrapper,
+  .milkdown .milkdown-code-block .search-box {
+    border-radius: 0px !important;
+  }
+
+  /* Remove border radius from copy button in code block */
+  .milkdown .milkdown-code-block .tools .tools-button-group button:last-child {
+    border-radius: 0px !important;
+  }
+
+  .milkdown .milkdown-code-block .tools .tools-button-group button:first-child {
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+  }
+  
+  .milkdown .milkdown-code-block .tools .tools-button-group button {
+    border-radius: 0px !important;
+  }
+
+  .yana-milkdown .milkdown .editor blockquote,
+  .yana-milkdown .milkdown .editor blockquote * {
+    font-style: italic !important;
+  }
+
+    /* Floating toolbar styles */
+    .milkdown .milkdown-toolbar {
+      border-radius: 0px !important;
+      box-shadow: none !important;
+    }
+
+  /* Slash menu styles */
+  .milkdown .milkdown-slash-menu {
+    border-radius: 0px !important;
+  }
+  .milkdown .milkdown-slash-menu ul li {
+    border-radius: 0px;
+  }
+  .milkdown .milkdown-slash-menu .tab-group  {
+    border-radius: 0px !important;
+    box-shadow: none !important;
+    padding: 0px !important;
+  }
+  .milkdown .milkdown-slash-menu .tab-group ul {
+    border-radius: 0px !important;
+  }
+  .milkdown .milkdown-slash-menu .menu-groups .menu-group li {
+    gap: 16px !important;
+    padding: 8px !important;
+    min-width: 0px;
+  }
+  .milkdown .milkdown-slash-menu .menu-groups .menu-group ul li {
+    border-radius: 0px !important;
+  }
+
+  /* Force list markers to be even more visible */
+  .milkdown .milkdown-list-item-block li .label-wrapper {
+    color: var(--foreground) !important;
+    opacity: 1 !important;
+  }
+
+  .milkdown .milkdown-list-item-block li .label-wrapper .label {
+    color: var(--foreground) !important;
+    font-weight: 500;
+  }
+
+  /* Style the task list checkboxes to be exactly like the UI Checkbox */
+  .milkdown .milkdown-list-item-block li .label-wrapper .checked,
+  .milkdown .milkdown-list-item-block li .label-wrapper .unchecked {
+    @apply flex items-center justify-center border transition-all;
+    width: 1rem !important; /* size-4 */
+    height: 1rem !important; /* size-4 */
+    border-radius: 0px !important; /* rounded-none */
+    margin: 8px 4px !important;
+    border-color: oklch(0.92 0.004 286.32 / 1) !important; /* border-input */
+  }
+
+  .milkdown .milkdown-list-item-block li .label-wrapper .unchecked {
+    background-color: transparent !important;
+  }
+
+  .dark .milkdown .milkdown-list-item-block li .label-wrapper .unchecked {
+    background-color: oklch(1 0 0 / 15%) !important; /* dark:bg-input/30 */
+  }
+
+  .milkdown .milkdown-list-item-block li .label-wrapper .checked {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    position: relative;
+  }
+
+  /* Hide the internal Milkdown SVG which might have a hardcoded border */
+  .milkdown .milkdown-list-item-block li .label-wrapper .checked svg {
+    display: none !important;
+  }
+
+  /* Use a pseudo-element to render the checkmark exactly like IconCheck */
+  .milkdown .milkdown-list-item-block li .label-wrapper .checked::after {
+    content: "";
+    display: block;
+    width: 0.875rem; /* size-3.5 */
+    height: 0.875rem; /* size-3.5 */
+    background-color: var(--primary-foreground);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  .milkdown .milkdown-list-item-block li .label-wrapper .unchecked svg {
+    display: none !important;
+  }
+
+  /* Handle strikethrough for checked items */
+  /* We target the content container when the checkbox is checked */
+  .milkdown .milkdown-list-item-block li:has(.checked) .children {
+    text-decoration: line-through !important;
+    color: var(--muted-foreground) !important;
+    opacity: 0.6;
+  }
+
+  /* Ensure the block handle is visible and positioned correctly */
+  .milkdown-block-handle {
+    @apply z-50 cursor-grab active:cursor-grabbing transition-colors;
+    color: var(--muted-foreground) !important;
+    background-color: transparent !important;
+    gap: 0 !important; /* Minimal gap */
+  }
+
+  /* Reduce the size of the plus and drag buttons */
+  .milkdown-block-handle .operation-item {
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .milkdown-block-handle .operation-item svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .milkdown-block-handle:hover {
+    color: var(--foreground) !important;
+    background-color: var(--accent) !important;
+    border-radius: 4px;
+  }
+
+  /* Make sure the editor doesn't clip the handle */
+  .milkdown {
+    overflow: visible !important;
+    position: relative;
+    width: 100%;
+  }
+
+  /* Heading sizes matching PlateJS (tailwind sizes) */
+  .yana-milkdown .milkdown .editor h1 { font-size: 2.25rem !important; line-height: 2.5rem !important; margin-top: 1.6em !important; margin-bottom: 0.5em !important; }
+  .yana-milkdown .milkdown .editor h2 { font-size: 1.5rem !important; line-height: 2rem !important; margin-top: 1.4em !important; margin-bottom: 0.5em !important; }
+  .yana-milkdown .milkdown .editor h3 { font-size: 1.25rem !important; line-height: 1.75rem !important; margin-top: 1em !important; margin-bottom: 0.5em !important; }
+  .yana-milkdown .milkdown .editor h4 { font-size: 1.125rem !important; line-height: 1.75rem !important; margin-top: 0.75em !important; margin-bottom: 0.5em !important; }
+  .yana-milkdown .milkdown .editor h5 { font-size: 1.125rem !important; line-height: 1.75rem !important; margin-top: 0.75em !important; margin-bottom: 0.5em !important; }
+  .yana-milkdown .milkdown .editor h6 { font-size: 1rem !important; line-height: 1.5rem !important; margin-top: 0.75em !important; margin-bottom: 0.5em !important; }
+
+  .yana-milkdown .milkdown .editor h1, 
+  .yana-milkdown .milkdown .editor h2, 
+  .yana-milkdown .milkdown .editor h3, 
+  .yana-milkdown .milkdown .editor h4, 
+  .yana-milkdown .milkdown .editor h5, 
+  .yana-milkdown .milkdown .editor h6 {
+    font-weight: 700 !important;
+    font-family: var(--font-sans), monospace !important;
+    word-spacing: -0.15em !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .yana-milkdown .milkdown .editor a {
+    color: #3b82f6 !important;
+    text-decoration: underline;
+    cursor: pointer;
+    word-spacing: -0.15em !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .yana-milkdown .milkdown .editor a:hover {
+    color: #60a5fa !important;
   }
 }
