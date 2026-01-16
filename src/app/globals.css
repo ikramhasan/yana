@@ -391,6 +391,16 @@
     gap: 0 !important; /* Minimal gap */
   }
 
+
+  /* Remove the drag handle */
+  .milkdown .milkdown-block-handle {
+    display: none !important;
+  }
+
+  .milkdown .milkdown-table-block .cell-handle[data-role="row-drag-handle"] {
+    display: none !important;
+  }
+
   /* Reduce the size of the plus and drag buttons */
   .milkdown-block-handle .operation-item {
     width: 24px !important;
