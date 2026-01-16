@@ -190,13 +190,18 @@
 
   .yana-milkdown .milkdown .editor {
     background-color: transparent !important;
-    padding: 2rem 16px !important; /* Reduced padding from 32px/64px */
+    padding: 1rem 16px !important;
     box-shadow: none !important;
     font-size: 1rem !important;
     outline: none !important;
     min-height: calc(100vh - 100px) !important;
     word-spacing: -0.1em !important;
     letter-spacing: -0.01em !important;
+  }
+
+  /* Remove top margin from the first heading in the editor */
+  .yana-milkdown .milkdown .editor > *:first-child {
+    margin-top: 0 !important;
   }
 
   /* Ensure the drop indicator is visible and doesn't block events */
