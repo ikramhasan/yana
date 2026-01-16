@@ -28,7 +28,7 @@ import {
 import {
   Collapsible,
   CollapsibleContent,
-} from "@/components/editor/ui/collapsible"
+} from "@/components/ui/collapsible"
 import { useFileTree } from "@/contexts/file-tree-context"
 import type { FileNode } from "@/types/file-tree"
 

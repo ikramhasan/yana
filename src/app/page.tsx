@@ -1,6 +1,5 @@
 "use client";
 
-import { MarkdownEditor } from "@/components/editor/markdown-editor";
 import { MilkdownEditor } from "@/components/editor/milkdown-editor";
 import { useFileTree } from "@/contexts/file-tree-context";
 import { useState } from "react";
@@ -125,7 +124,6 @@ You can use three or more hyphens, asterisks, or underscores to create a horizon
 ***
 `;
 
-import { IconReplace, IconEdit, IconBrandPowershell } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 
 export default function Page() {
@@ -138,24 +136,7 @@ export default function Page() {
 
   return (
     <div className="relative h-full w-full">
-      {editorType === 'milkdown' ? (
-        <MilkdownEditor markdown={markdown} fileId={selectedFile?.id} filePath={selectedFile?.path} />
-      ) : (
-        <MarkdownEditor markdown={markdown} fileId={selectedFile?.id} filePath={selectedFile?.path} />
-      )}
-
-      {/* Floating Toggle Button */}
-      <div className="fixed bottom-8 right-8 z-[1001]">
-        <Button
-          onClick={() => setEditorType(prev => prev === 'milkdown' ? 'plate' : 'milkdown')}
-          variant="secondary"
-          size="lg"
-          className="h-12 gap-2 rounded-full border border-border/50 bg-background/80 px-6 font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105 hover:bg-accent"
-        >
-          <IconReplace className="size-5" />
-          <span>Switch to {editorType === 'milkdown' ? 'PlateJS' : 'Milkdown'}</span>
-        </Button>
-      </div>
+      <MilkdownEditor markdown={markdown} fileId={selectedFile?.id} filePath={selectedFile?.path} />
     </div>
   );
 }
