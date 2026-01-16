@@ -38,7 +38,7 @@ export function GeneralTab() {
           <ToggleGroupItem
             value="light"
             aria-label="Light"
-            className="flex h-auto gap-2 py-2 border data-[state=on]:bg-black data-[state=on]:text-white data-[state=on]:border-black hover:bg-neutral-100 hover:text-black"
+            className="flex h-auto gap-2 py-2 border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:border-primary hover:bg-accent hover:text-accent-foreground"
           >
             <IconSun className="size-5" />
             <span className="text-xs font-bold uppercase">Light</span>
@@ -46,7 +46,7 @@ export function GeneralTab() {
           <ToggleGroupItem
             value="dark"
             aria-label="Dark"
-            className="flex h-auto gap-2 py-2 border data-[state=on]:bg-black data-[state=on]:text-white data-[state=on]:border-black hover:bg-neutral-100 hover:text-black"
+            className="flex h-auto gap-2 py-2 border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:border-primary hover:bg-accent hover:text-accent-foreground"
           >
             <IconMoon className="size-5" />
             <span className="text-xs font-bold uppercase">Dark</span>
@@ -54,7 +54,7 @@ export function GeneralTab() {
           <ToggleGroupItem
             value="system"
             aria-label="System"
-            className="flex h-auto gap-2 py-2 border data-[state=on]:bg-black data-[state=on]:text-white data-[state=on]:border-black hover:bg-neutral-100 hover:text-black"
+            className="flex h-auto gap-2 py-2 border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:border-primary hover:bg-accent hover:text-accent-foreground"
           >
             <IconDeviceDesktop className="size-5" />
             <span className="text-xs font-bold uppercase">System</span>
