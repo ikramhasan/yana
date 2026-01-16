@@ -286,7 +286,7 @@ function FileTreeNode({ node, selectedId, onSelect, depth = 0 }: FileTreeNodePro
             </SidebarMenuButton>
           </ContextMenuTrigger>
           <ContextMenuContent>
-            <ContextMenuItem>
+            <ContextMenuItem onClick={() => onSelect(node)}>
               <IconFileText className="mr-2 size-4" />
               Open
             </ContextMenuItem>
