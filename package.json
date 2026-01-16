@@ -31,6 +31,7 @@
     "date-fns": "^4.1.0",
     "dedent": "1.0.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.26.2",
     "html2canvas-pro": "^1.5.13",
     "input-otp": "^1.4.2",
     "katex": "^0.16.27",

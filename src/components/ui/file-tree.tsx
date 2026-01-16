@@ -10,6 +10,7 @@ import React, {
 } from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { FileIcon, FolderIcon, FolderOpenIcon } from "lucide-react"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -256,22 +257,34 @@ const Folder = forwardRef<
       >
         <AccordionPrimitive.Trigger
           className={cn(
-            `flex w-full items-center gap-1 rounded-md text-sm`,
+            `relative flex w-full items-center gap-1 rounded-md text-sm px-1.5 h-7 transition-colors duration-200`,
             className,
             {
-              "bg-foreground text-background rounded-md": isSelect && isSelectable,
+              "text-background": isSelect && isSelectable,
               "cursor-pointer": isSelectable,
+              "hover:bg-accent/50": !isSelect && isSelectable,
               "cursor-not-allowed opacity-50": !isSelectable,
             }
           )}
           disabled={!isSelectable}
         >
-          <span className="shrink-0">
+          {isSelect && isSelectable && (
+            <motion.div
+              layoutId="file-tree-active-pill"
+              className="absolute inset-0 bg-foreground rounded-md z-0"
+              transition={{
+                type: "spring",
+                bounce: 0.2,
+                duration: 0.3,
+              }}
+            />
+          )}
+          <span className="relative z-10 shrink-0">
             {expandedItems?.includes(value)
               ? (openIcon ?? <FolderOpenIcon className="size-4" />)
               : (closeIcon ?? <FolderIcon className="size-4" />)}
           </span>
-          <span className="truncate">{element}</span>
+          <span className="relative z-10 truncate">{element}</span>
         </AccordionPrimitive.Trigger>
         <AccordionPrimitive.Content className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down relative h-full overflow-hidden text-sm">
           {element && indicator && <TreeIndicator aria-hidden="true" />}
@@ -285,6 +298,8 @@ const Folder = forwardRef<
 )
 
 Folder.displayName = "Folder"
+
+
 
 const File = forwardRef<
   HTMLButtonElement,
@@ -317,9 +332,10 @@ const File = forwardRef<
         type="button"
         disabled={!isSelectable}
         className={cn(
-          "flex w-full items-center gap-1 rounded-md pr-1 text-sm duration-200 ease-in-out rtl:pr-0 rtl:pl-1",
+          "relative flex w-full items-center gap-1 rounded-md pr-1 text-sm transition-colors duration-200 ease-in-out rtl:pr-0 rtl:pl-1 px-1.5 h-7",
           {
-            "bg-foreground text-background": isSelected && isSelectable,
+            "text-background": isSelected && isSelectable,
+            "hover:bg-accent/50": !isSelected && isSelectable,
           },
           isSelectable ? "cursor-pointer" : "cursor-not-allowed opacity-50",
           direction === "rtl" ? "rtl" : "ltr",
@@ -328,8 +344,19 @@ const File = forwardRef<
         onClick={() => selectItem(value)}
         {...props}
       >
-        <span className="shrink-0">{fileIcon ?? <FileIcon className="size-4" />}</span>
-        <span className="truncate">{children}</span>
+        {isSelected && (
+          <motion.div
+            layoutId="file-tree-active-pill"
+            className="absolute inset-0 bg-foreground rounded-md z-0"
+            transition={{
+              type: "spring",
+              bounce: 0.2,
+              duration: 0.3,
+            }}
+          />
+        )}
+        <span className="relative z-10 shrink-0">{fileIcon ?? <FileIcon className="size-4" />}</span>
+        <span className="relative z-10 truncate">{children}</span>
       </button>
     )
   }
