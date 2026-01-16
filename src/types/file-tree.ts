@@ -48,6 +48,8 @@ export interface FileTreeContextValue {
   selectFile: (node: FileNode) => Promise<void>;
   /** Create a new markdown note in the specified directory */
   createNewNote: (parentPath: string) => Promise<void>;
+  /** Create a new folder in the specified directory */
+  createNewFolder: (parentPath: string) => Promise<void>;
   /** Delete a file or directory at the specified path */
   deleteNode: (path: string) => Promise<void>;
   /** Duplicate a file at the specified path */

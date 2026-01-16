@@ -114,6 +114,30 @@ class FileTreeService {
   }
 
   /**
+   * Create a new folder in the specified directory.
+   * @param path - Absolute path to the directory where the folder should be created
+   * @returns Promise resolving to the FileNode of the newly created folder
+   * @throws Error if creation fails
+   */
+  async createNewFolder(path: string): Promise<FileNode> {
+    try {
+      await info(`Creating new folder in: ${path}`);
+      const node = await invoke<FileNode>('create_new_folder', { path });
+      return node;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      await logError(`Failed to create new folder in ${path}: ${errorMessage}`);
+      
+      await message(`Failed to create new folder:\n\n${errorMessage}`, {
+        title: 'New Folder Error',
+        kind: 'error',
+      });
+      
+      throw new Error(`Failed to create new folder: ${errorMessage}`);
+    }
+  }
+
+  /**
    * Delete a file or directory at the specified path.
    * @param path - Absolute path to the file or directory to delete
    * @throws Error if deletion fails

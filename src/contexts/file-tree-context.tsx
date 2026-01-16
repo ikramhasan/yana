@@ -148,6 +148,25 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   }, [selectFile, refresh]);
+  
+  /**
+   * Create a new folder in the specified directory.
+   */
+  const createNewFolder = useCallback(async (parentPath: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await fileTreeService.createNewFolder(parentPath);
+      // Backend watcher will trigger a refresh, but we refresh manually for speed
+      await refresh();
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to create new folder');
+      setError(error);
+      console.error('Failed to create new folder:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [refresh]);
 
   /**
    * Delete a file or directory at the specified path.
@@ -316,6 +335,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     error,
     selectFile,
     createNewNote,
+    createNewFolder,
     deleteNode,
     duplicateFile,
     renameNode,

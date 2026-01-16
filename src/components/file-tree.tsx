@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Tree, Folder, File, type TreeViewElement } from "@/components/ui/file-tree"
 import { useFileTree } from "@/contexts/file-tree-context"
+import { useVault } from "@/contexts/vault-context"
 import type { FileNode } from "@/types/file-tree"
 import { ask } from "@tauri-apps/plugin-dialog"
 
@@ -70,7 +71,8 @@ function createNodeMap(nodes: FileNode[]): Map<string, FileNode> {
 }
 
 export function FileTree() {
-  const { nodes, selectedFile, isLoading, error, selectFile, createNewNote, deleteNode, duplicateFile, renameNode } = useFileTree()
+  const { nodes, selectedFile, isLoading, error, selectFile, createNewNote, createNewFolder, deleteNode, duplicateFile, renameNode } = useFileTree()
+  const { currentVault } = useVault()
 
   const treeElements = React.useMemo(() => convertToTreeElements(nodes), [nodes])
   const nodeMap = React.useMemo(() => createNodeMap(nodes), [nodes])
@@ -106,27 +108,44 @@ export function FileTree() {
   return (
     <SidebarGroup className="p-0">
       <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-      <Tree
-        className="px-0"
-        indicator={true}
-        initialSelectedId={selectedFile?.id}
-        openIcon={<IconFolderOpen className="size-4" />}
-        closeIcon={<IconFolder className="size-4" />}
-      >
-        {treeElements.map((element) => (
-          <TreeNode
-            key={element.id}
-            element={element}
-            nodeMap={nodeMap}
-            selectedId={selectedFile?.id ?? undefined}
-            onSelect={selectFile}
-            onCreateNote={createNewNote}
-            onDelete={deleteNode}
-            onDuplicate={duplicateFile}
-            onRename={renameNode}
-          />
-        ))}
-      </Tree>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div className="flex-1 min-h-[200px]">
+            <Tree
+              className="px-0"
+              indicator={true}
+              initialSelectedId={selectedFile?.id}
+              openIcon={<IconFolderOpen className="size-4" />}
+              closeIcon={<IconFolder className="size-4" />}
+            >
+              {treeElements.map((element) => (
+                <TreeNode
+                  key={element.id}
+                  element={element}
+                  nodeMap={nodeMap}
+                  selectedId={selectedFile?.id ?? undefined}
+                  onSelect={selectFile}
+                  onCreateNote={createNewNote}
+                  onCreateFolder={createNewFolder}
+                  onDelete={deleteNode}
+                  onDuplicate={duplicateFile}
+                  onRename={renameNode}
+                />
+              ))}
+            </Tree>
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem onClick={() => currentVault?.path && createNewNote(currentVault.path)}>
+            <IconFilePlus className="mr-2 size-4" />
+            New note
+          </ContextMenuItem>
+          <ContextMenuItem onClick={() => currentVault?.path && createNewFolder(currentVault.path)}>
+            <IconFolderPlus className="mr-2 size-4" />
+            New folder
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </SidebarGroup>
   )
 }
@@ -137,6 +156,7 @@ interface TreeNodeProps {
   selectedId: string | undefined
   onSelect: (node: FileNode) => void
   onCreateNote: (parentPath: string) => Promise<void>
+  onCreateFolder: (parentPath: string) => Promise<void>
   onDelete: (path: string) => Promise<void>
   onDuplicate: (path: string) => Promise<void>
   onRename: (oldPath: string, newPath: string) => Promise<void>
@@ -148,6 +168,7 @@ function TreeNode({
   selectedId,
   onSelect,
   onCreateNote,
+  onCreateFolder,
   onDelete,
   onDuplicate,
   onRename
@@ -170,6 +191,13 @@ function TreeNode({
     e.stopPropagation()
     if (isFolder) {
       await onCreateNote(node.path)
+    }
+  }
+
+  const handleNewFolder = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isFolder) {
+      await onCreateFolder(node.path)
     }
   }
 
@@ -274,6 +302,7 @@ function TreeNode({
                   selectedId={selectedId}
                   onSelect={onSelect}
                   onCreateNote={onCreateNote}
+                  onCreateFolder={onCreateFolder}
                   onDelete={onDelete}
                   onDuplicate={onDuplicate}
                   onRename={onRename}
@@ -287,7 +316,7 @@ function TreeNode({
             <IconFilePlus className="mr-2 size-4" />
             New note
           </ContextMenuItem>
-          <ContextMenuItem>
+          <ContextMenuItem onClick={handleNewFolder}>
             <IconFolderPlus className="mr-2 size-4" />
             New folder
           </ContextMenuItem>

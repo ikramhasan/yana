@@ -26,6 +26,7 @@ pub fn run() {
             commands::read_file,
             commands::write_file,
             commands::create_new_note,
+            commands::create_new_folder,
             commands::delete_path,
             commands::duplicate_file,
             commands::rename_path,

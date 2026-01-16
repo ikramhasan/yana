@@ -271,6 +271,43 @@ pub async fn create_new_note(path: String) -> Result<FileNode, String> {
     }
 }
 
+/// Create a new folder in the specified directory
+#[tauri::command]
+pub async fn create_new_folder(path: String) -> Result<FileNode, String> {
+    log::info!("Creating new folder in: {}", path);
+    
+    let dir_path = Path::new(&path);
+    if !dir_path.exists() || !dir_path.is_dir() {
+        let error_msg = format!("Invalid parent directory: {}", path);
+        log::error!("{}", error_msg);
+        return Err(error_msg);
+    }
+
+    let mut folder_name = "New Folder".to_string();
+    let mut folder_path = dir_path.join(&folder_name);
+    let mut counter = 1;
+
+    // Find a unique name like "New Folder", "New Folder 1", etc.
+    while folder_path.exists() {
+        folder_name = format!("New Folder {}", counter);
+        folder_path = dir_path.join(&folder_name);
+        counter += 1;
+    }
+
+    match fs::create_dir(&folder_path) {
+        Ok(_) => {
+            log::info!("Successfully created new folder: {}", folder_path.display());
+            // Return the FileNode for the newly created folder
+            Ok(FileNode::new(&folder_path, "folder", Some(Vec::new())))
+        }
+        Err(e) => {
+            let error_msg = format!("Failed to create new folder: {}", e);
+            log::error!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
 /// Delete a file or directory at the specified path
 #[tauri::command]
 pub async fn delete_path(path: String) -> Result<(), String> {
