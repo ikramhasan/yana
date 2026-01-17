@@ -7,6 +7,7 @@ import { convertFileSrc } from '@tauri-apps/api/core';
 
 import { fileTreeService } from "@/services/file-tree-service";
 import { useDebouncedCallback } from "use-debounce";
+import { useFileTree, calculateStats } from "@/contexts/file-tree-context";
 
 interface MilkdownEditorProps {
   markdown?: string;
@@ -98,6 +99,8 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
     fileTreeService.saveFile(path, markdownToSave);
   }, 1000);
 
+  const { updateStats } = useFileTree();
+
   const { get, loading } = useEditor((root) => {
     const crepe = new Crepe({
       root,
@@ -133,6 +136,12 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
       listener.markdownUpdated((ctx, markdown, prevMarkdown) => {
         if (filePath && markdown !== prevMarkdown) {
           saveFile(filePath, markdown);
+          
+          // Calculate stats locally and update context
+          const stats = calculateStats(markdown);
+          if (stats) {
+            updateStats(stats);
+          }
         }
       });
     });

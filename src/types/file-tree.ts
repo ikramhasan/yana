@@ -30,6 +30,11 @@ export interface FileEvent {
   path: string;
 }
 
+export interface FileStats {
+  wordCount: number;
+  charCount: number;
+}
+
 /**
  * Context value providing file tree state and operations to components
  */
@@ -40,6 +45,8 @@ export interface FileTreeContextValue {
   selectedFile: FileNode | null;
   /** Content of the currently selected file */
   fileContent: string | null;
+  /** Statistics for the currently selected file */
+  stats: FileStats | null;
   /** Whether file tree operations are in progress */
   isLoading: boolean;
   /** Error state from file tree operations */
@@ -66,6 +73,8 @@ export interface FileTreeContextValue {
   toggleExpand: (id: string) => void;
   /** Set expanded IDs directly */
   setExpandedIds: (ids: string[]) => void;
+  /** Update the stats of the currently selected file */
+  updateStats: (stats: FileStats) => void;
   /** Refresh the file tree from the filesystem */
   refresh: () => Promise<void>;
 }

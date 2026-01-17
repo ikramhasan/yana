@@ -17,6 +17,16 @@ function isImageFile(filename: string): boolean {
 }
 
 /**
+ * Calculate stats from content
+ */
+export function calculateStats(content: string | null) {
+  if (content === null) return null;
+  const wordCount = content.trim() === "" ? 0 : content.trim().split(/\s+/).length;
+  const charCount = content.length;
+  return { wordCount, charCount };
+}
+
+/**
  * React context for file tree state management.
  * Provides file tree data and operations to the component tree.
  */
@@ -31,6 +41,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
   const [nodes, setNodes] = useState<FileNode[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [fileContent, setFileContent] = useState<string | null>(null);
+  const [stats, setStats] = useState<{ wordCount: number; charCount: number } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -185,6 +196,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     if (isImageFile(node.name)) {
       setSelectedFile(node);
       setFileContent(null);
+      setStats(null);
       return;
     }
 
@@ -194,6 +206,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       const content = await fileTreeService.readFile(node.path);
       setSelectedFile(node);
       setFileContent(content);
+      setStats(calculateStats(content));
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to read file');
       setError(error);
@@ -265,6 +278,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       if (selectedFile && (selectedFile.path === path || selectedFile.path.startsWith(path + '/'))) {
         setSelectedFile(null);
         setFileContent(null);
+        setStats(null);
       }
       
       // Backend watcher will trigger a refresh, but we refresh manually for speed
@@ -318,6 +332,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
               // Path inside renamed folder
               setSelectedFile(null);
               setFileContent(null);
+              setStats(null);
           }
       }
       
@@ -338,6 +353,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
       setNodes([]);
       setSelectedFile(null);
       setFileContent(null);
+      setStats(null);
       setError(null);
       setIsLoading(false);
       return;
@@ -410,10 +426,19 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     };
   }, [currentVault?.path, loadFileTree]);
 
+  /**
+   * Update the stats of the currently selected file.
+   * This is used by the editor to keep the stats in sync without storing full content.
+   */
+  const updateStats = useCallback((newStats: { wordCount: number; charCount: number }) => {
+    setStats(newStats);
+  }, []);
+
   const value: FileTreeContextValue = React.useMemo(() => ({
     nodes,
     selectedFile,
     fileContent,
+    stats,
     isLoading,
     error,
     selectFile,
@@ -427,11 +452,13 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     expandedIds,
     toggleExpand,
     setExpandedIds,
+    updateStats,
     refresh,
   }), [
     nodes,
     selectedFile,
     fileContent,
+    stats,
     isLoading,
     error,
     selectFile,
@@ -443,6 +470,7 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     renamingId,
     expandedIds,
     toggleExpand,
+    updateStats,
     refresh
   ]);
 

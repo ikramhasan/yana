@@ -23,6 +23,25 @@ import {
   import { useVault } from "@/contexts/vault-context";
   import { useFileTree } from "@/contexts/file-tree-context";
   
+  function FileStats() {
+    const { selectedFile, stats } = useFileTree();
+  
+    if (!selectedFile || !stats) return null;
+  
+    return (
+      <div className="px-2 py-2 text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium">
+        <div className="flex justify-between items-center mb-1">
+          <span>Words</span>
+          <span className="text-muted-foreground">{stats.wordCount}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span>Characters</span>
+          <span className="text-muted-foreground">{stats.charCount}</span>
+        </div>
+      </div>
+    );
+  }
+  
   export function AppSidebar() {
     const { currentVault } = useVault();
     const { createNewNote, createNewFolder } = useFileTree();
@@ -51,7 +70,8 @@ import {
               <SidebarContent>
                 <FileTree />
               </SidebarContent>
-              <SidebarFooter>
+              <SidebarFooter className="border-t border-sidebar-border/50">
+                <FileStats />
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SettingsDialog>
