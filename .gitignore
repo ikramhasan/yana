@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 .kiro
+
+certificate-base64.txt
+Certificates.p12
+GUIDE.md
