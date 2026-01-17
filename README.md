@@ -55,16 +55,6 @@ bun tauri build
 
 ---
 
-## Tech Stack
-
-- **Framework**: [Next.js](https://nextjs.org)
-- **Editor**: [Milkdown](https://milkdown.dev/) (Crepe)
-- **Desktop**: [Tauri](https://tauri.app/)
-- **Styling**: Tailwind CSS
-- **Icons**: [Tabler Icons](https://tabler-icons.io/)
-
----
-
 <div align="center">
   Made with ❤️ by <a href="https://github.com/ikramhasan">Ikram Hasan</a>
 </div>
