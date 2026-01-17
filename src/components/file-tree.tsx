@@ -12,6 +12,7 @@ import {
   IconFileText,
   IconMarkdown,
   IconPhoto,
+  IconLayout,
 } from "@tabler/icons-react"
 
 // Image file extensions
@@ -40,6 +41,8 @@ import { useFileTree } from "@/contexts/file-tree-context"
 import { useVault } from "@/contexts/vault-context"
 import type { FileNode } from "@/types/file-tree"
 import { ask } from "@tauri-apps/plugin-dialog"
+
+import { TemplateDialog } from "@/components/template-dialog"
 
 // Convert FileNode to TreeViewElement format
 function convertToTreeElements(nodes: FileNode[]): TreeViewElement[] {
@@ -87,8 +90,14 @@ export function FileTree() {
   } = useFileTree()
   const { currentVault } = useVault()
 
+  const [activeTemplate, setActiveTemplate] = React.useState<{path: string, name: string} | null>(null)
+
   const treeElements = React.useMemo(() => convertToTreeElements(nodes), [nodes])
   const nodeMap = React.useMemo(() => createNodeMap(nodes), [nodes])
+
+  const handleTemplate = (path: string, name: string) => {
+    setActiveTemplate({ path, name })
+  }
 
   return (
     <SidebarGroup className="p-0 flex flex-col h-full">
@@ -131,6 +140,7 @@ export function FileTree() {
                     onDelete={deleteNode}
                     onDuplicate={duplicateFile}
                     onRename={renameNode}
+                    onTemplate={handleTemplate}
                   />
                 ))}
               </Tree>
@@ -148,6 +158,13 @@ export function FileTree() {
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+
+      <TemplateDialog
+        open={!!activeTemplate}
+        onOpenChange={(open) => !open && setActiveTemplate(null)}
+        folderPath={activeTemplate?.path || ""}
+        folderName={activeTemplate?.name || ""}
+      />
     </SidebarGroup>
   )
 }
@@ -162,6 +179,7 @@ interface TreeNodeProps {
   onDelete: (path: string) => Promise<void>
   onDuplicate: (path: string) => Promise<void>
   onRename: (oldPath: string, newPath: string) => Promise<void>
+  onTemplate: (path: string, name: string) => void
 }
 
 function TreeNode({
@@ -173,7 +191,8 @@ function TreeNode({
   onCreateFolder,
   onDelete,
   onDuplicate,
-  onRename
+  onRename,
+  onTemplate
 }: TreeNodeProps) {
   const node = nodeMap.get(element.id)
   const isFolder = element.children !== undefined
@@ -225,6 +244,13 @@ function TreeNode({
     setIsRenaming(true)
     setNewName(element.name)
     setTimeout(() => inputRef.current?.focus(), 0)
+  }
+
+  const handleTemplate = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isFolder) {
+      onTemplate(node.path, element.name)
+    }
   }
 
   const handleRenameSubmit = async () => {
@@ -318,6 +344,7 @@ function TreeNode({
                   onDelete={onDelete}
                   onDuplicate={onDuplicate}
                   onRename={onRename}
+                  onTemplate={onTemplate}
                 />
               ))}
             </Folder>
@@ -331,6 +358,10 @@ function TreeNode({
           <ContextMenuItem onClick={handleNewFolder}>
             <IconFolderPlus className="mr-2 size-4" />
             New folder
+          </ContextMenuItem>
+          <ContextMenuItem onClick={handleTemplate}>
+            <IconLayout className="mr-2 size-4" />
+            Template
           </ContextMenuItem>
           <ContextMenuItem onClick={handleRenameStart}>
             <IconPencil className="mr-2 size-4" />
@@ -404,3 +435,4 @@ function TreeNode({
     </ContextMenu>
   )
 }
+

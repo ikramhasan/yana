@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { FileNode, FileTreeContextValue, FileEvent } from '@/types/file-tree';
 import { fileTreeService } from '@/services/file-tree-service';
+import { templateService } from '@/services/template-service';
 import { useVault } from './vault-context';
 
 // Image file extensions
@@ -55,6 +56,13 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     selectedFileRef.current = selectedFile;
   }, [selectedFile]);
+
+  // Load templates on mount
+  useEffect(() => {
+    templateService.loadTemplates().catch(err => {
+      console.error('Failed to load templates:', err);
+    });
+  }, []);
 
   /**
    * Load file tree from the current vault path.
@@ -220,12 +228,20 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
   /**
    * Create a new markdown note in the specified directory.
    * Automatically selects the new note after creation.
+   * Checks for folder template and applies it if present.
    */
   const createNewNote = useCallback(async (parentPath: string) => {
     try {
       setIsLoading(true);
       setError(null);
       const newNode = await fileTreeService.createNewNote(parentPath);
+
+      // Check for template
+      const template = templateService.getTemplate(parentPath);
+      if (template) {
+        await fileTreeService.saveFile(newNode.path, template);
+      }
+
       // Set as renaming
       setRenamingId(newNode.id);
       
