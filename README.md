@@ -10,6 +10,19 @@
 
 ---
 
+## Download
+
+### macOS
+
+| Chip | Download |
+|------|----------|
+| Apple Silicon (M1/M2/M3/M4) | [Download for Apple Silicon](https://github.com/ikramhasan/yana/releases/latest/download/yana_aarch64.dmg) |
+| Intel | [Download for Intel](https://github.com/ikramhasan/yana/releases/latest/download/yana_x64.dmg) |
+
+> **Note**: After downloading, open the `.dmg` file and drag Yana to your Applications folder. On first launch, right-click the app and select "Open" to bypass Gatekeeper.
+
+---
+
 ![Yana Screenshot](screenshot.png)
 
 ## About Yana
