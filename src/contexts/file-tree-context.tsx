@@ -349,12 +349,14 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
 
   // Load file tree when vault changes
   useEffect(() => {
+    // Clear state when vault changes
+    setSelectedFile(null);
+    setFileContent(null);
+    setStats(null);
+    setError(null);
+    
     if (!currentVault?.path) {
       setNodes([]);
-      setSelectedFile(null);
-      setFileContent(null);
-      setStats(null);
-      setError(null);
       setIsLoading(false);
       return;
     }

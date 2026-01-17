@@ -220,9 +220,11 @@ export function TabsProvider({ children }: { children: React.ReactNode }) {
     //   saveTabs(prevVaultIdRef.current, tabs, activeTabId);
     // }
 
+    // Clear tabs when vault changes (since persistence is currently disabled)
+    setTabs([]);
+    setActiveTabIdState(null);
+
     if (!currentVault?.id) {
-      setTabs([]);
-      setActiveTabIdState(null);
       prevVaultIdRef.current = null;
       return;
     }
