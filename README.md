@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="app-icon.png" alt="Yana Logo" width="128" height="128" />
+  <h1>Yana (Yet Another Note App)</h1>
+  <p><strong>Boring by design. Fast by nature. Markdown to the core.</strong></p>
+
+  <p>
+    <a href="MANIFESTO.md">Read the Manifesto</a>
+  </p>
+</div>
+
+---
+
+![Yana Screenshot](screenshot.png)
+
+## About Yana
+
+Yana is a simple, open-source, markdown-based note-taking app designed for people who just want to write. In a world full of bloated note-taking applications with endless plugins and proprietary formats, Yana stays out of your way.
+
+### Why Yana?
+
+- **Markdown as the Source of Truth**: Standard markdown syntax. No proprietary blocks. Your notes remains yours, readable anywhere.
+- **No Plugin Overload**: Features that matter are built-in. No more wasting time browsing marketplaces.
+- **Fast & Lightweight**: At ~12MB, Yana is light on resources and fast to open.
+- **Open Source**: Licensed under MIT. Clone it, fork it, make it yours.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- [Bun](https://bun.sh/) (Recommended) or Node.js
+
+### Development
+
+First, install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then, run the app:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun tauri dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Build
 
-## Learn More
+To build the Tauri application:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+bun tauri build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
+- **Framework**: [Next.js](https://nextjs.org)
+- **Editor**: [Milkdown](https://milkdown.dev/) (Crepe)
+- **Desktop**: [Tauri](https://tauri.app/)
+- **Styling**: Tailwind CSS
+- **Icons**: [Tabler Icons](https://tabler-icons.io/)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+  Made with ❤️ by <a href="https://github.com/ikramhasan">Ikram Hasan</a>
+</div>
+
