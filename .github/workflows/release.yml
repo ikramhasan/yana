@@ -84,7 +84,7 @@ jobs:
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
-          uploadUpdaterJson: true
+          includeUpdaterJson: true
 
       - name: Cleanup keychain
         if: always()
