@@ -8,6 +8,7 @@ import type { Settings, SettingsStore } from '@/types/settings';
 const DEFAULT_SETTINGS: Settings = {
   hideEditorToolbar: false,
   maxTabs: 5,
+  autoCheckUpdates: true,
 };
 
 /**

@@ -92,11 +92,15 @@ fn scan_directory_recursive(dir_path: &Path) -> Result<Vec<FileNode>, String> {
             Ok(e) => e,
             Err(e) => {
                 // Log but don't fail - skip problematic entries
-                log::warn!("Failed to read directory entry in '{}': {}", dir_path.display(), e);
+                log::warn!(
+                    "Failed to read directory entry in '{}': {}",
+                    dir_path.display(),
+                    e
+                );
                 continue;
             }
         };
-        
+
         let path = entry.path();
         let file_name = path
             .file_name()
@@ -141,7 +145,7 @@ fn scan_directory_recursive(dir_path: &Path) -> Result<Vec<FileNode>, String> {
 #[tauri::command]
 pub async fn scan_directory(path: String) -> Result<Vec<FileNode>, String> {
     log::info!("Scanning directory: {}", path);
-    
+
     let dir_path = Path::new(&path);
 
     if !dir_path.exists() {
@@ -158,7 +162,11 @@ pub async fn scan_directory(path: String) -> Result<Vec<FileNode>, String> {
 
     match scan_directory_recursive(dir_path) {
         Ok(nodes) => {
-            log::info!("Successfully scanned directory '{}' with {} top-level entries", path, nodes.len());
+            log::info!(
+                "Successfully scanned directory '{}' with {} top-level entries",
+                path,
+                nodes.len()
+            );
             Ok(nodes)
         }
         Err(e) => {
@@ -172,7 +180,7 @@ pub async fn scan_directory(path: String) -> Result<Vec<FileNode>, String> {
 #[tauri::command]
 pub async fn read_file(path: String) -> Result<String, String> {
     log::info!("Reading file: {}", path);
-    
+
     let file_path = Path::new(&path);
 
     if !file_path.exists() {
@@ -189,7 +197,11 @@ pub async fn read_file(path: String) -> Result<String, String> {
 
     match fs::read_to_string(file_path) {
         Ok(content) => {
-            log::info!("Successfully read file '{}' ({} bytes)", path, content.len());
+            log::info!(
+                "Successfully read file '{}' ({} bytes)",
+                path,
+                content.len()
+            );
             Ok(content)
         }
         Err(e) => {
@@ -200,12 +212,11 @@ pub async fn read_file(path: String) -> Result<String, String> {
     }
 }
 
-
 /// Write content to a file
 #[tauri::command]
 pub async fn write_file(path: String, content: String) -> Result<(), String> {
     log::info!("Writing to file: {}", path);
-    
+
     let file_path = Path::new(&path);
 
     // Basic validation to ensure we're writing to a valid path structure
@@ -215,9 +226,9 @@ pub async fn write_file(path: String, content: String) -> Result<(), String> {
     // Let's at least check parent directory exists to avoid random writes.
     if let Some(parent) = file_path.parent() {
         if !parent.exists() {
-             let error_msg = format!("Parent directory does not exist: {}", parent.display());
-             log::error!("{}", error_msg);
-             return Err(error_msg);
+            let error_msg = format!("Parent directory does not exist: {}", parent.display());
+            log::error!("{}", error_msg);
+            return Err(error_msg);
         }
     }
 
@@ -238,7 +249,7 @@ pub async fn write_file(path: String, content: String) -> Result<(), String> {
 #[tauri::command]
 pub async fn create_new_note(path: String) -> Result<FileNode, String> {
     log::info!("Creating new note in: {}", path);
-    
+
     let dir_path = Path::new(&path);
     if !dir_path.exists() || !dir_path.is_dir() {
         let error_msg = format!("Invalid parent directory: {}", path);
@@ -275,7 +286,7 @@ pub async fn create_new_note(path: String) -> Result<FileNode, String> {
 #[tauri::command]
 pub async fn create_new_folder(path: String) -> Result<FileNode, String> {
     log::info!("Creating new folder in: {}", path);
-    
+
     let dir_path = Path::new(&path);
     if !dir_path.exists() || !dir_path.is_dir() {
         let error_msg = format!("Invalid parent directory: {}", path);
@@ -312,7 +323,7 @@ pub async fn create_new_folder(path: String) -> Result<FileNode, String> {
 #[tauri::command]
 pub async fn delete_path(path: String) -> Result<(), String> {
     log::info!("Deleting path: {}", path);
-    
+
     let target_path = Path::new(&path);
     if !target_path.exists() {
         let error_msg = format!("Path does not exist: {}", path);
@@ -343,7 +354,7 @@ pub async fn delete_path(path: String) -> Result<(), String> {
 #[tauri::command]
 pub async fn duplicate_file(path: String) -> Result<FileNode, String> {
     log::info!("Duplicating file: {}", path);
-    
+
     let source_path = Path::new(&path);
     if !source_path.exists() || !source_path.is_file() {
         let error_msg = format!("File does not exist or is not a file: {}", path);
@@ -351,16 +362,24 @@ pub async fn duplicate_file(path: String) -> Result<FileNode, String> {
         return Err(error_msg);
     }
 
-    let parent = source_path.parent().ok_or_else(|| "Could not determine parent directory".to_string())?;
-    let file_stem = source_path.file_stem().and_then(|s| s.to_str()).ok_or_else(|| "Invalid filename stem".to_string())?;
-    let extension = source_path.extension().and_then(|e| e.to_str()).unwrap_or("");
+    let parent = source_path
+        .parent()
+        .ok_or_else(|| "Could not determine parent directory".to_string())?;
+    let file_stem = source_path
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .ok_or_else(|| "Invalid filename stem".to_string())?;
+    let extension = source_path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("");
 
     let mut new_file_name = if extension.is_empty() {
         format!("{} copy", file_stem)
     } else {
         format!("{} copy.{}", file_stem, extension)
     };
-    
+
     let mut target_path = parent.join(&new_file_name);
     let mut counter = 1;
 
@@ -392,7 +411,7 @@ pub async fn duplicate_file(path: String) -> Result<FileNode, String> {
 #[tauri::command]
 pub async fn rename_path(path: String, new_path: String) -> Result<FileNode, String> {
     log::info!("Renaming: {} to {}", path, new_path);
-    
+
     let source_path = Path::new(&path);
     let target_path = Path::new(&new_path);
 
@@ -411,7 +430,11 @@ pub async fn rename_path(path: String, new_path: String) -> Result<FileNode, Str
     match fs::rename(source_path, target_path) {
         Ok(_) => {
             log::info!("Successfully renamed '{}' to '{}'", path, new_path);
-            let node_type = if target_path.is_dir() { "folder" } else { "file" };
+            let node_type = if target_path.is_dir() {
+                "folder"
+            } else {
+                "file"
+            };
             Ok(FileNode::new(target_path, node_type, None))
         }
         Err(e) => {
@@ -426,7 +449,7 @@ pub async fn rename_path(path: String, new_path: String) -> Result<FileNode, Str
 #[tauri::command]
 pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> {
     log::info!("Starting file watcher for: {}", path);
-    
+
     let watch_path = Path::new(&path);
 
     if !watch_path.exists() {
@@ -461,51 +484,54 @@ pub async fn start_watching(app: AppHandle, path: String) -> Result<(), String> 
     let watched_path = path.clone();
 
     // Create raw watcher
-    let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
-        match res {
-            Ok(event) => {
-                let event_type = match event.kind {
-                    notify::EventKind::Create(_) => Some("create"),
-                    notify::EventKind::Remove(_) => Some("delete"),
-                    notify::EventKind::Modify(notify::event::ModifyKind::Name(_)) => Some("rename"),
-                    _ => None,
-                };
+    let mut watcher =
+        notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
+            match res {
+                Ok(event) => {
+                    let event_type = match event.kind {
+                        notify::EventKind::Create(_) => Some("create"),
+                        notify::EventKind::Remove(_) => Some("delete"),
+                        notify::EventKind::Modify(notify::event::ModifyKind::Name(_)) => {
+                            Some("rename")
+                        }
+                        _ => None,
+                    };
 
-                if let Some(event_type_str) = event_type {
-                    for path in event.paths {
-                        let file_event = FileEvent {
-                            event_type: event_type_str.to_string(),
-                            path: path.to_string_lossy().to_string(),
-                        };
+                    if let Some(event_type_str) = event_type {
+                        for path in event.paths {
+                            let file_event = FileEvent {
+                                event_type: event_type_str.to_string(),
+                                path: path.to_string_lossy().to_string(),
+                            };
 
-                        log::debug!(
-                            "File event: {} - {}",
-                            file_event.event_type,
-                            file_event.path
-                        );
+                            log::debug!(
+                                "File event: {} - {}",
+                                file_event.event_type,
+                                file_event.path
+                            );
 
-                        // Emit event to frontend
-                        // Since this is raw notify, events might burst. 
-                        // Frontend likely still has debounce (FileTreeService comments say "Events are debounced by the backend" but that was old code).
-                        // If frontend relies on debounce, we might spam it.
-                        // However, user specifically asked to use existing libraries and "subscribe to CreateKind...".
-                        // Basic file operations usually don't burst too much compared to Modify(Data).
-                        if let Err(e) = app_handle.emit(FILE_EVENT_NAME, &file_event) {
-                            log::error!("Failed to emit file event: {}", e);
+                            // Emit event to frontend
+                            // Since this is raw notify, events might burst.
+                            // Frontend likely still has debounce (FileTreeService comments say "Events are debounced by the backend" but that was old code).
+                            // If frontend relies on debounce, we might spam it.
+                            // However, user specifically asked to use existing libraries and "subscribe to CreateKind...".
+                            // Basic file operations usually don't burst too much compared to Modify(Data).
+                            if let Err(e) = app_handle.emit(FILE_EVENT_NAME, &file_event) {
+                                log::error!("Failed to emit file event: {}", e);
+                            }
                         }
                     }
                 }
+                Err(e) => {
+                    log::error!("File watcher error: {:?}", e);
+                }
             }
-            Err(e) => {
-                 log::error!("File watcher error: {:?}", e);
-            }
-        }
-    })
-    .map_err(|e| {
-        let error_msg = format!("Failed to create file watcher: {}", e);
-        log::error!("{}", error_msg);
-        error_msg
-    })?;
+        })
+        .map_err(|e| {
+            let error_msg = format!("Failed to create file watcher: {}", e);
+            log::error!("{}", error_msg);
+            error_msg
+        })?;
 
     // Start watching the directory
     watcher
@@ -559,7 +585,11 @@ pub async fn save_image_to_attachments(
     image_name: String,
     image_data: Vec<u8>,
 ) -> Result<String, String> {
-    log::info!("Saving image '{}' for markdown file: {}", image_name, md_file_path);
+    log::info!(
+        "Saving image '{}' for markdown file: {}",
+        image_name,
+        md_file_path
+    );
 
     let md_path = Path::new(&md_file_path);
 
@@ -580,7 +610,10 @@ pub async fn save_image_to_attachments(
             log::error!("{}", error_msg);
             error_msg
         })?;
-        log::info!("Created attachments directory: {}", attachments_dir.display());
+        log::info!(
+            "Created attachments directory: {}",
+            attachments_dir.display()
+        );
     }
 
     // Check if file with same name exists and has identical content
@@ -589,7 +622,10 @@ pub async fn save_image_to_attachments(
         if let Ok(existing_data) = fs::read(&initial_path) {
             if existing_data == image_data {
                 let relative_path = format!("attachments/{}", image_name);
-                log::info!("Reusing existing identical image: {}", initial_path.display());
+                log::info!(
+                    "Reusing existing identical image: {}",
+                    initial_path.display()
+                );
                 return Ok(relative_path);
             }
         }
@@ -612,7 +648,10 @@ pub async fn save_image_to_attachments(
         if let Ok(existing_data) = fs::read(&numbered_path) {
             if existing_data == image_data {
                 let relative_path = format!("attachments/{}", numbered_name);
-                log::info!("Reusing existing identical image: {}", numbered_path.display());
+                log::info!(
+                    "Reusing existing identical image: {}",
+                    numbered_path.display()
+                );
                 return Ok(relative_path);
             }
         }

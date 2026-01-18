@@ -5,6 +5,7 @@ import { ThemeProvider } from "./theme-provider";
 import { VaultProvider } from "@/contexts/vault-context";
 import { SettingsProvider } from "@/contexts/settings-context";
 import { FileTreeProvider } from "@/contexts/file-tree-context";
+import { UpdateManager } from "./update-manager";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -17,7 +18,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <SettingsProvider>
         <VaultProvider>
           <FileTreeProvider>
-            <SidebarProvider>{children}</SidebarProvider>
+            <SidebarProvider>
+              <UpdateManager />
+              {children}
+            </SidebarProvider>
           </FileTreeProvider>
         </VaultProvider>
       </SettingsProvider>

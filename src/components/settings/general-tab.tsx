@@ -7,11 +7,14 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { IconSun, IconMoon, IconDeviceDesktop } from "@tabler/icons-react";
+import { IconSun, IconMoon, IconDeviceDesktop, IconRefresh, IconLoader } from "@tabler/icons-react";
+import { useUpdate } from "@/hooks/use-update";
+import { Button } from "@/components/ui/button";
 
 export function GeneralTab() {
   const { theme, setTheme } = useThemeTransition();
   const { settings, updateSetting } = useSettings();
+  const { version, isChecking, checkForUpdates } = useUpdate();
 
   return (
     <div className="space-y-6">
@@ -28,8 +31,6 @@ export function GeneralTab() {
           value={theme ?? undefined}
           onValueChange={(val: string | null) => {
             if (val) {
-              // We don't easily get the event here from ToggleGroup's onValueChange,
-              // but we can try to find the button that was clicked or just use center.
               setTheme(val as "light" | "dark" | "system");
             }
           }}
@@ -62,68 +63,49 @@ export function GeneralTab() {
         </ToggleGroup>
       </div>
 
-      {/* <Separator /> */}
+      <Separator className="opacity-50" />
 
-      {/* Tabs Section */}
-      {/* <div className="space-y-3">
+      {/* Updates Section */}
+      <div className="space-y-4">
         <div className="space-y-1">
-          <h3 className="text-sm font-medium">Tabs</h3>
+          <h3 className="text-sm font-medium">Updates</h3>
           <p className="text-xs text-muted-foreground">
-            Configure how tabs behave
+            Current version: <span className="font-mono">{version}</span>
           </p>
         </div>
+
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="max-tabs" className="text-sm font-normal">
-              Maximum open tabs
+            <Label htmlFor="auto-check" className="text-sm font-normal">
+              Automatically check for updates
             </Label>
             <p className="text-xs text-muted-foreground">
-              Oldest tabs will close automatically when limit is reached
-            </p>
-          </div>
-          <Input
-            id="max-tabs"
-            type="number"
-            min={1}
-            max={20}
-            value={settings.maxTabs}
-            onChange={(e) => {
-              const value = parseInt(e.target.value, 10);
-              if (!isNaN(value) && value >= 1 && value <= 20) {
-                updateSetting("maxTabs", value);
-              }
-            }}
-            className="w-20"
-          />
-        </div>
-      </div> */}
-
-      {/* <Separator /> */}
-
-      {/* Editor Section */}
-      {/* <div className="space-y-3">
-        <div className="space-y-1">
-          <h3 className="text-sm font-medium">Editor</h3>
-          <p className="text-xs text-muted-foreground">
-            Customize your editor experience
-          </p>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label htmlFor="hide-toolbar" className="text-sm font-normal">
-              Hide Editor Toolbar
-            </Label>
-            <p className="text-xs text-muted-foreground">
-              Hide the fixed toolbar at the top of the editor
+              Yana will notify you when a new version is available
             </p>
           </div>
           <Switch
-            id="hide-toolbar"
-            checked={settings.hideEditorToolbar}
-            onCheckedChange={(checked) => updateSetting('hideEditorToolbar', checked)}
+            id="auto-check"
+            checked={settings.autoCheckUpdates}
+            onCheckedChange={(checked) => updateSetting('autoCheckUpdates', checked)}
           />
         </div>
-      </div> */}
+
+        <div className="pt-1">
+          <Button
+            variant="outline"
+            className="w-full justify-start gap-2 h-9"
+            onClick={() => checkForUpdates(true)}
+            disabled={isChecking}
+          >
+            {isChecking ? (
+              <IconLoader className="size-4 animate-spin text-muted-foreground" />
+            ) : (
+              <IconRefresh className="size-4 text-muted-foreground" />
+            )}
+            <span className="flex-1 text-left">Check for Updates</span>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

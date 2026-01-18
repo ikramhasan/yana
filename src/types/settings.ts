@@ -6,10 +6,12 @@
  * Represents the application settings
  */
 export interface Settings {
-  /** Whether to hide the fixed editor toolbar */
+  /** Whether to hide the fixed editor toolbar. [NOTE]: feature disabled */
   hideEditorToolbar: boolean;
-  /** Maximum number of tabs allowed (default: 5) */
+  /** Maximum number of tabs allowed (default: 5). [NOTE]: feature disabled */
   maxTabs: number;
+  /** Whether to automatically check for updates on startup */
+  autoCheckUpdates: boolean;
 }
 
 /**
