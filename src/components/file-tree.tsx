@@ -276,6 +276,13 @@ function TreeNode({
   const handleRenameSubmit = async () => {
     if (newName.trim() === "" || newName === element.name) {
       setIsRenaming(false)
+      // If name hasn't changed, manually focus editor since it won't detect path change
+      if (!isFolder) {
+        setTimeout(() => {
+          const editor = document.querySelector('.ProseMirror') as HTMLElement
+          editor?.focus()
+        }, 0)
+      }
       return
     }
 
