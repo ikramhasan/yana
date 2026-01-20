@@ -279,6 +279,9 @@ function TreeNode({
       return
     }
 
+    // Optimistically close input to allow editor focus
+    setIsRenaming(false)
+
     const parentPath = node.path.substring(0, node.path.lastIndexOf('/'))
     const newPath = `${parentPath}/${newName}`
 
@@ -287,8 +290,7 @@ function TreeNode({
     } catch (err) {
       console.error("Rename failed", err)
       setNewName(element.name)
-    } finally {
-      setIsRenaming(false)
+      setIsRenaming(true)
     }
   }
 

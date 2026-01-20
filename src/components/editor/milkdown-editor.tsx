@@ -82,6 +82,7 @@ function convertToRelativePaths(markdown: string, mdFilePath: string): string {
 
 const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps) => {
   const filePathRef = useRef(filePath);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Keep the ref updated with the latest filePath
   useEffect(() => {
@@ -101,7 +102,7 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
 
   const { updateStats } = useFileTree();
 
-  const { get, loading } = useEditor((root) => {
+  const { loading } = useEditor((root) => {
     const crepe = new Crepe({
       root,
       defaultValue: displayMarkdown,
@@ -149,6 +150,23 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
     return crepe;
   }, [fileId]);
 
+  // Focus editor when file changes or loads, but don't steal focus from inputs (like rename)
+  useEffect(() => {
+    if (!loading && wrapperRef.current) {
+      // Check if user is currently typing in an input (e.g. renaming a file)
+      const active = document.activeElement;
+      const isInput = active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement;
+      
+      if (!isInput) {
+        // Small timeout to ensure DOM is ready and selection is stable
+        setTimeout(() => {
+          const editor = wrapperRef.current?.querySelector('.ProseMirror') as HTMLElement;
+          editor?.focus();
+        }, 0);
+      }
+    }
+  }, [loading, filePath]);
+
   useEffect(() => {
     if (!filePath) return;
     return () => {
@@ -157,7 +175,7 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
   }, [saveFile, fileId, filePath]);
 
   return (
-    <div className="milkdown-crepe-wrapper relative mx-auto w-full max-w-[800px] px-12">
+    <div ref={wrapperRef} className="milkdown-crepe-wrapper relative mx-auto w-full max-w-[800px] px-12">
       <Milkdown />
     </div>
   );
