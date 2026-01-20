@@ -206,9 +206,19 @@ function TreeNode({
       setIsRenaming(true)
       setNewName(element.name)
       setRenamingId(null)
-      setTimeout(() => inputRef.current?.focus(), 0)
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus()
+          const lastDotIndex = element.name.lastIndexOf('.')
+          if (!isFolder && lastDotIndex > 0) {
+            inputRef.current.setSelectionRange(0, lastDotIndex)
+          } else {
+            inputRef.current.select()
+          }
+        }
+      }, 0)
     }
-  }, [renamingId, element.id, setRenamingId, element.name])
+  }, [renamingId, element.id, setRenamingId, element.name, isFolder])
 
   if (!node) return null
 
@@ -243,7 +253,17 @@ function TreeNode({
     e.stopPropagation()
     setIsRenaming(true)
     setNewName(element.name)
-    setTimeout(() => inputRef.current?.focus(), 0)
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+        const lastDotIndex = element.name.lastIndexOf('.')
+        if (!isFolder && lastDotIndex > 0) {
+          inputRef.current.setSelectionRange(0, lastDotIndex)
+        } else {
+          inputRef.current.select()
+        }
+      }
+    }, 0)
   }
 
   const handleTemplate = (e: React.MouseEvent) => {
