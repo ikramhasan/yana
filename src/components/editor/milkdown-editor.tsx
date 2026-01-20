@@ -4,6 +4,9 @@ import { useEffect, useRef } from 'react';
 import { Crepe } from '@milkdown/crepe';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import { $prose } from '@milkdown/kit/utils';
+import { schemaCtx } from '@milkdown/kit/core';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
 
 import { fileTreeService } from "@/services/file-tree-service";
 import { useDebouncedCallback } from "use-debounce";
@@ -80,6 +83,68 @@ function convertToRelativePaths(markdown: string, mdFilePath: string): string {
   );
 }
 
+/**
+ * Create a custom ProseMirror plugin to handle pasting images from clipboard.
+ * This intercepts clipboard paste events containing image files and saves them
+ * to the attachments folder instead of creating temporary blob URLs.
+ */
+function createImagePastePlugin(
+  getFilePath: () => string | undefined,
+  saveImage: (mdFilePath: string, file: File) => Promise<string>
+) {
+  return $prose((ctx) => {
+    const schema = ctx.get(schemaCtx);
+
+    return new Plugin({
+      key: new PluginKey('YANA_IMAGE_PASTE'),
+      props: {
+        handlePaste: (view, event) => {
+          const clipboardData = event.clipboardData;
+          if (!clipboardData) return false;
+
+          // Check for image files in clipboard
+          const items = Array.from(clipboardData.items);
+          const imageItem = items.find(item => item.type.startsWith('image/'));
+
+          if (!imageItem) return false;
+
+          const file = imageItem.getAsFile();
+          if (!file) return false;
+
+          const currentFilePath = getFilePath();
+          if (!currentFilePath) return false;
+
+          // Prevent default paste handling
+          event.preventDefault();
+
+          // Process the image asynchronously
+          saveImage(currentFilePath, file)
+            .then(relativePath => {
+              const mdDir = getDirectory(currentFilePath);
+              const absolutePath = `${mdDir}/${relativePath}`;
+              const assetUrl = convertFileSrc(absolutePath);
+
+              // Create and insert the image node
+              const imageNode = schema.nodes.image.create({
+                src: assetUrl,
+                alt: file.name,
+                title: '',
+              });
+
+              const { tr } = view.state;
+              view.dispatch(tr.replaceSelectionWith(imageNode).scrollIntoView());
+            })
+            .catch(error => {
+              console.error('Failed to save pasted image:', error);
+            });
+
+          return true;
+        },
+      },
+    });
+  });
+}
+
 const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps) => {
   const filePathRef = useRef(filePath);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -132,6 +197,14 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
         },
       }
     });
+
+    // Add custom plugin to handle pasting images from clipboard
+    // This ensures pasted images go through the same attachment flow as uploaded images
+    const imagePastePlugin = createImagePastePlugin(
+      () => filePathRef.current,
+      fileTreeService.saveImageToAttachments
+    );
+    crepe.editor.use(imagePastePlugin);
 
     crepe.on((listener) => {
       listener.markdownUpdated((ctx, markdown, prevMarkdown) => {

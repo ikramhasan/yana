@@ -5,7 +5,7 @@
   "identifier": "com.ikramhasan.yana",
   "build": {
     "frontendDist": "../out",
-    "devUrl": "http://localhost:3000",
+    "devUrl": "http://localhost:3001",
     "beforeDevCommand": "bun dev",
     "beforeBuildCommand": "bun run build"
   },
