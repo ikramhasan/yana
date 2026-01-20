@@ -4,9 +4,11 @@ import { useEffect, useRef } from 'react';
 import { Crepe } from '@milkdown/crepe';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import { convertFileSrc } from '@tauri-apps/api/core';
-import { $prose } from '@milkdown/kit/utils';
+import { $prose, $inputRule } from '@milkdown/kit/utils';
 import { schemaCtx } from '@milkdown/kit/core';
 import { Plugin, PluginKey } from '@milkdown/prose/state';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { linkSchema } from '@milkdown/kit/preset/commonmark';
 
 import { fileTreeService } from "@/services/file-tree-service";
 import { useDebouncedCallback } from "use-debounce";
@@ -82,6 +84,35 @@ function convertToRelativePaths(markdown: string, mdFilePath: string): string {
     }
   );
 }
+
+/**
+ * Create an input rule that converts markdown link syntax [text](url) to actual links.
+ * This enables typing markdown-style links and having them render as clickable links.
+ */
+const linkInputRule = $inputRule((ctx) => {
+  // Match [text](url) but NOT ![text](url) which is for images
+  // The negative lookbehind (?<![!\[]) ensures we don't match image syntax
+  // or nested brackets
+  return new InputRule(
+    /(?<![![\[])\[([^\]]+)\]\(([^)]+)\)$/,
+    (state, match, start, end) => {
+      const [, text, url] = match;
+      if (!text || !url) return null;
+
+      // Get the link mark type
+      const linkMarkType = linkSchema.type(ctx);
+
+      // Create the link mark with the URL
+      const mark = linkMarkType.create({ href: url, title: null });
+
+      // Create a text node with the link mark applied
+      const textNode = state.schema.text(text, [mark]);
+
+      // Replace the matched markdown syntax with the linked text
+      return state.tr.replaceWith(start, end, textNode);
+    }
+  );
+});
 
 /**
  * Create a custom ProseMirror plugin to handle pasting images from clipboard.
@@ -197,6 +228,9 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
         },
       }
     });
+
+    // Add input rule for converting markdown link syntax [text](url) to actual links
+    crepe.editor.use(linkInputRule);
 
     // Add custom plugin to handle pasting images from clipboard
     // This ensures pasted images go through the same attachment flow as uploaded images
