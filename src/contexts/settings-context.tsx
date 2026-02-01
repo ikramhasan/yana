@@ -19,6 +19,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     hideEditorToolbar: false,
     maxTabs: 5,
     autoCheckUpdates: true,
+    devMode: false,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

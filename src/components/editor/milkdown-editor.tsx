@@ -13,6 +13,7 @@ import { linkSchema } from '@milkdown/kit/preset/commonmark';
 import { fileTreeService } from "@/services/file-tree-service";
 import { useDebouncedCallback } from "use-debounce";
 import { useFileTree, calculateStats } from "@/contexts/file-tree-context";
+import { performanceTracker } from '@/services/performance-tracker';
 
 interface MilkdownEditorProps {
   markdown?: string;
@@ -186,9 +187,19 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
   }, [filePath]);
 
   // Pre-process markdown: convert relative paths to asset:// URLs for display
-  const displayMarkdown = filePath && markdown
-    ? convertToAssetUrls(markdown, filePath)
-    : markdown ?? "";
+  const displayMarkdown = (() => {
+    if (!filePath || !markdown) return markdown ?? "";
+
+    // Track markdown conversion if we're tracking this file
+    if (performanceTracker.getCurrentFileId() === fileId) {
+      performanceTracker.markStart('markdownConversion');
+      const result = convertToAssetUrls(markdown, filePath);
+      performanceTracker.markEnd('markdownConversion');
+      return result;
+    }
+
+    return convertToAssetUrls(markdown, filePath);
+  })();
 
   const saveFile = useDebouncedCallback((path: string, content: string) => {
     // Convert asset:// URLs back to relative paths before saving
@@ -199,6 +210,12 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
   const { updateStats } = useFileTree();
 
   const { loading } = useEditor((root) => {
+    // Track editor init if we're tracking this file
+    const isTracking = performanceTracker.getCurrentFileId() === fileId;
+    if (isTracking) {
+      performanceTracker.markStart('editorInit');
+    }
+
     const crepe = new Crepe({
       root,
       defaultValue: displayMarkdown,
@@ -244,7 +261,7 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
       listener.markdownUpdated((ctx, markdown, prevMarkdown) => {
         if (filePath && markdown !== prevMarkdown) {
           saveFile(filePath, markdown);
-          
+
           // Calculate stats locally and update context
           const stats = calculateStats(markdown);
           if (stats) {
@@ -254,16 +271,32 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
       });
     });
 
+    if (isTracking) {
+      performanceTracker.markEnd('editorInit');
+      performanceTracker.markStart('firstRender');
+    }
+
     return crepe;
   }, [fileId]);
 
   // Focus editor when file changes or loads, but don't steal focus from inputs (like rename)
   useEffect(() => {
     if (!loading && wrapperRef.current) {
+      // Track first render if we're tracking this file
+      const isTracking = performanceTracker.getCurrentFileId() === fileId;
+
+      if (isTracking) {
+        // Use requestAnimationFrame to measure after paint
+        requestAnimationFrame(() => {
+          performanceTracker.markEnd('firstRender');
+          performanceTracker.complete();
+        });
+      }
+
       // Check if user is currently typing in an input (e.g. renaming a file)
       const active = document.activeElement;
       const isInput = active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement;
-      
+
       if (!isInput) {
         // Small timeout to ensure DOM is ready and selection is stable
         setTimeout(() => {
@@ -272,7 +305,7 @@ const MilkdownEditorInner = ({ markdown, fileId, filePath }: MilkdownEditorProps
         }, 0);
       }
     }
-  }, [loading, filePath]);
+  }, [loading, filePath, fileId]);
 
   useEffect(() => {
     if (!filePath) return;

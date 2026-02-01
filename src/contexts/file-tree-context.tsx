@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import type { FileNode, FileTreeContextValue, FileEvent } from '@/types/file-tree';
 import { fileTreeService } from '@/services/file-tree-service';
 import { templateService } from '@/services/template-service';
+import { performanceTracker } from '@/services/performance-tracker';
 import { useVault } from './vault-context';
 
 // Image file extensions
@@ -211,15 +212,25 @@ export function FileTreeProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
-      const content = await fileTreeService.readFile(node.path);
+
+      // Start performance tracking
+      performanceTracker.start(node.id, node.name);
+
+      // Track IPC + file read
+      performanceTracker.markStart('ipcRoundTrip');
+      const response = await fileTreeService.readFile(node.path);
+      performanceTracker.markEnd('ipcRoundTrip');
+
+      // Set the Rust-measured read time
+      performanceTracker.setStepDuration('rustReadFile', response.duration_ms);
+
       setSelectedFile(node);
-      setFileContent(content);
-      setStats(calculateStats(content));
+      setFileContent(response.content);
+      setStats(calculateStats(response.content));
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to read file');
       setError(error);
       console.error('Failed to read file:', error);
-      // Don't clear selectedFile on error - keep the selection but show error state
     } finally {
       setIsLoading(false);
     }

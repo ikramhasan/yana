@@ -1,8 +1,8 @@
 "use client";
 
 import { MilkdownEditor } from "@/components/editor/milkdown-editor";
+import { DevPanel } from "@/components/dev/dev-panel";
 import { useFileTree } from "@/contexts/file-tree-context";
-import { useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 
 
@@ -20,11 +20,14 @@ export default function Page() {
   // If no file is selected, show only the sidebar trigger
   if (!selectedFile) {
     return (
-      <div className="relative h-full w-full flex items-center justify-center">
-        <div className="text-muted-foreground text-sm">
-          Select a file to start editing
+      <>
+        <div className="relative h-full w-full flex items-center justify-center">
+          <div className="text-muted-foreground text-sm">
+            Select a file to start editing
+          </div>
         </div>
-      </div>
+        <DevPanel />
+      </>
     );
   }
 
@@ -35,21 +38,27 @@ export default function Page() {
   if (isImage) {
     const imageSrc = convertFileSrc(selectedFile.path);
     return (
-      <div className="relative h-full w-full overflow-hidden">
-        <div className="flex h-full w-full items-center justify-center overflow-auto p-8">
-          <img
-            src={imageSrc}
-            alt={selectedFile.name}
-            className="max-h-full max-w-full object-contain"
-          />
+      <>
+        <div className="relative h-full w-full overflow-hidden">
+          <div className="flex h-full w-full items-center justify-center overflow-auto p-8">
+            <img
+              src={imageSrc}
+              alt={selectedFile.name}
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
         </div>
-      </div>
+        <DevPanel />
+      </>
     );
   }
 
   return (
-    <div className="relative h-full w-full">
-      <MilkdownEditor markdown={fileContent ?? ""} fileId={selectedFile?.id} filePath={selectedFile?.path} />
-    </div>
+    <>
+      <div className="relative h-full w-full">
+        <MilkdownEditor markdown={fileContent ?? ""} fileId={selectedFile?.id} filePath={selectedFile?.path} />
+      </div>
+      <DevPanel />
+    </>
   );
 }

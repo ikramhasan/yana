@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS: Settings = {
   hideEditorToolbar: false,
   maxTabs: 5,
   autoCheckUpdates: true,
+  devMode: false,
 };
 
 /**

@@ -68,6 +68,13 @@ impl FileNode {
     }
 }
 
+/// Response from read_file including timing information
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReadFileResponse {
+    pub content: String,
+    pub duration_ms: f64,
+}
+
 /// Check if a file has a supported extension
 fn is_supported_file(path: &Path) -> bool {
     path.extension()
@@ -176,9 +183,9 @@ pub async fn scan_directory(path: String) -> Result<Vec<FileNode>, String> {
     }
 }
 
-/// Read file contents as string
+/// Read file contents as string with timing information
 #[tauri::command]
-pub async fn read_file(path: String) -> Result<String, String> {
+pub async fn read_file(path: String) -> Result<ReadFileResponse, String> {
     log::info!("Reading file: {}", path);
 
     let file_path = Path::new(&path);
@@ -195,14 +202,24 @@ pub async fn read_file(path: String) -> Result<String, String> {
         return Err(error_msg);
     }
 
+    let start = std::time::Instant::now();
+
     match fs::read_to_string(file_path) {
         Ok(content) => {
+            let duration = start.elapsed();
+            let duration_ms = duration.as_secs_f64() * 1000.0;
+
             log::info!(
-                "Successfully read file '{}' ({} bytes)",
+                "Successfully read file '{}' ({} bytes, {:.2}ms)",
                 path,
-                content.len()
+                content.len(),
+                duration_ms
             );
-            Ok(content)
+
+            Ok(ReadFileResponse {
+                content,
+                duration_ms,
+            })
         }
         Err(e) => {
             let error_msg = format!("Failed to read file '{}': {}", path, e);

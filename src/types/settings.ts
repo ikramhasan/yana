@@ -12,6 +12,8 @@ export interface Settings {
   maxTabs: number;
   /** Whether to automatically check for updates on startup */
   autoCheckUpdates: boolean;
+  /** Whether developer mode is enabled */
+  devMode: boolean;
 }
 
 /**

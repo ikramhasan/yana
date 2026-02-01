@@ -3,6 +3,7 @@ import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { info, error as logError } from '@tauri-apps/plugin-log';
 import { message } from '@tauri-apps/plugin-dialog';
 import type { FileNode, FileEvent } from '@/types/file-tree';
+import type { ReadFileResponse } from '@/types/performance';
 
 /**
  * Service layer for file tree operations and file system watching.
@@ -42,24 +43,24 @@ class FileTreeService {
   /**
    * Read file contents as UTF-8 string.
    * @param path - Absolute path to the file to read
-   * @returns Promise resolving to file contents as string
+   * @returns Promise resolving to ReadFileResponse with content and duration_ms
    * @throws Error if file doesn't exist or read fails
    */
-  async readFile(path: string): Promise<string> {
+  async readFile(path: string): Promise<ReadFileResponse> {
     try {
       await info(`Reading file: ${path}`);
-      const content = await invoke<string>('read_file', { path });
-      return content;
+      const response = await invoke<ReadFileResponse>('read_file', { path });
+      return response;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       await logError(`Failed to read file ${path}: ${errorMessage}`);
-      
+
       // Show user-facing error dialog
       await message(`Failed to read file:\n\n${errorMessage}`, {
         title: 'File Read Error',
         kind: 'error',
       });
-      
+
       throw new Error(`Failed to read file: ${errorMessage}`);
     }
   }

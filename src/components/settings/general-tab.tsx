@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { IconSun, IconMoon, IconDeviceDesktop, IconRefresh, IconLoader } from "@tabler/icons-react";
+import { IconSun, IconMoon, IconDeviceDesktop, IconRefresh, IconLoader, IconCode } from "@tabler/icons-react";
 import { useUpdate } from "@/hooks/use-update";
 import { Button } from "@/components/ui/button";
 
@@ -104,6 +104,37 @@ export function GeneralTab() {
             )}
             <span className="flex-1 text-left">Check for Updates</span>
           </Button>
+        </div>
+      </div>
+
+      <Separator className="opacity-50" />
+
+      {/* Developer Section */}
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <h3 className="text-sm font-medium">Developer</h3>
+          <p className="text-xs text-muted-foreground">
+            Tools for debugging and performance analysis
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <IconCode className="size-4 text-muted-foreground" />
+            <div className="space-y-0.5">
+              <Label htmlFor="dev-mode" className="text-sm font-normal">
+                Developer Mode
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Show performance metrics panel
+              </p>
+            </div>
+          </div>
+          <Switch
+            id="dev-mode"
+            checked={settings.devMode}
+            onCheckedChange={(checked) => updateSetting('devMode', checked)}
+          />
         </div>
       </div>
     </div>
