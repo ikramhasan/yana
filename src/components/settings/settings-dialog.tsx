@@ -24,7 +24,10 @@ export function SettingsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] p-6 gap-6">
+      <DialogContent
+        className="sm:max-w-[600px] p-6 gap-6"
+        onContextMenu={(e) => e.stopPropagation()}
+      >
         <DialogHeader className="p-0">
           <DialogTitle className="text-xl font-bold uppercase tracking-wide">
             Settings
